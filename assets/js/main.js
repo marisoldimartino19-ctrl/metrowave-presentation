@@ -1,21 +1,23 @@
 /* =========================================================
-   METROWAVE — presentazione a slide orizzontali
+   METROWAVE — interazioni
+   Presentazione a slide: ogni [data-section] è una schermata.
+   Navigazione: frecce tastiera, pulsanti, indice, swipe — mai
+   lo scroll di pagina (ogni slide scorre solo al proprio interno).
    ========================================================= */
 (() => {
   const STATIONS = window.METROWAVE_STATIONS;
+  const PRIMARY = window.METROWAVE_PRIMARY;
   const PAIRINGS = window.METROWAVE_PAIRINGS;
   const FLOW = window.METROWAVE_FLOW;
   const SLOTS = window.METROWAVE_SLOTS;
   const HEADWAY = window.METROWAVE_HEADWAY;
   const SVG_NS = "http://www.w3.org/2000/svg";
   const NIGHT = "#07070C";
-  const ABYSS = "#0A0F2E";
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const pad = (n) => String(n).padStart(2, "0");
   const fmtMinutes = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
-  const wrap = (i, n) => (i + n) % n;
 
   // Colore del testo leggibile su un fondo: tra nero e bianco, quello con il
   // rapporto di contrasto WCAG più alto
@@ -30,161 +32,41 @@
     const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
     return (hi + 0.05) / (lo + 0.05);
   };
+  const ink = (hex) => (contrast(hex, NIGHT) >= contrast(hex, "#FFFFFF") ? NIGHT : "#FFFFFF");
 
-  // Colore della stazione sui fondi scuri, schiarito verso il bianco
-  // solo se non raggiunge 3:1 di contrasto
+  // Colore del simbolo sui fondi scuri (card e pannello mappa): il colore della
+  // stazione, schiarito verso il bianco solo se non raggiunge 3:1 di contrasto
+  const ABYSS = "#0A0F2E";
   const mixWhite = (hex, t) =>
     "#" + [1, 3, 5].map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - t) + 255 * t).toString(16).padStart(2, "0")).join("");
-  const onDark = (hex) => {
+  const symbolColor = (hex) => {
     let t = 0;
     while (Math.min(contrast(mixWhite(hex, t), NIGHT), contrast(mixWhite(hex, t), ABYSS)) < 3) t += 0.01;
     return mixWhite(hex, t);
   };
   const star = (ok) => (ok ? "" : "*");
 
-  // Simbolo della stazione (SVG inline da symbols.js: eredita il colore con currentColor),
-  // oppure lo spazio predisposto se non c'è ancora
+  // Simbolo della stazione, oppure lo spazio predisposto se non c'è ancora
+  // (SVG inline da symbols.js: eredita il colore con currentColor, così in hover segue --ink)
   const SYMBOLS = window.METROWAVE_SYMBOLS || {};
-  const symbol = (s, color, cls = "") =>
+  const symbolSlot = (s, cls = "") =>
     s.symbol && SYMBOLS[s.symbol]
-      ? `<span class="symbol ${cls}" style="--sym:${color}">${SYMBOLS[s.symbol]}</span>`
+      ? `<span class="symbol ${cls}" style="--sym:${symbolColor(s.color)}">${SYMBOLS[s.symbol]}</span>`
       : `<span class="symbol-slot ${cls}" aria-label="Spazio per il simbolo di ${s.name}"><span>Simbolo<br/>${s.num}</span></span>`;
 
-  /* =========================================================
-     DECK: navigazione orizzontale tra le slide
-     ========================================================= */
-  const deck = { i: 0, slides: [], onLeave: {}, onKey: {} };
-
-  function initDeck() {
-    const track = $("#deck-track");
-    deck.slides = $$(".slide", track);
-    const n = deck.slides.length;
-
-    $("#deck-total").textContent = pad(n);
-    $("#deck-menu").innerHTML = deck.slides.map(
-      (s, i) => `<li><button type="button" class="t-label" data-go="${i}"><span class="num">${pad(i + 1)}</span><span class="lbl">${s.dataset.title}</span></button></li>`
-    ).join("");
-
-    document.addEventListener("click", (e) => {
-      const go = e.target.closest("[data-go]");
-      if (go) return goTo(Number(go.dataset.go));
-      const step = e.target.closest("[data-deck-step]");
-      if (step) goTo(deck.i + Number(step.dataset.deckStep));
-    });
-
-    // Tastiera: frecce, PagSu/PagGiù (telecomandi da presentazione), Home/Fine
-    document.addEventListener("keydown", (e) => {
-      if (!$("#lightbox").hidden) return;
-      if (e.target.closest("input, textarea, select")) return;
-      if (e.altKey || e.ctrlKey || e.metaKey) return;
-      const k = e.key;
-      let to = null;
-      if (k === "ArrowRight" || k === "PageDown") to = deck.i + 1;
-      else if (k === "ArrowLeft" || k === "PageUp") to = deck.i - 1;
-      else if (k === "Home") to = 0;
-      else if (k === "End") to = n - 1;
-      else if (k === "ArrowDown" || k === "ArrowUp") {
-        // Su/giù scorrono gli elementi interni della slide (stazioni, step)
-        const handler = deck.onKey[deck.slides[deck.i].id];
-        if (handler) { e.preventDefault(); handler(k === "ArrowDown" ? 1 : -1); }
-        return;
-      }
-      if (to === null) return;
-      e.preventDefault();
-      goTo(to);
-    });
-
-    // Rotella / trackpad: un gesto = una slide. Il blocco resta finché
-    // arrivano eventi (inerzia del trackpad) e si libera poco dopo.
-    let wheelLock = false;
-    let wheelTimer;
-    document.addEventListener("wheel", (e) => {
-      if (!$("#lightbox").hidden) return;
-      const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-      const slide = deck.slides[deck.i];
-      // Su schermi piccoli la slide può scorrere in verticale: lasciala scorrere
-      if (!horizontal && canScroll(slide, e.deltaY)) return;
-      e.preventDefault();
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => (wheelLock = false), 200);
-      const d = horizontal ? e.deltaX : e.deltaY;
-      if (wheelLock || Math.abs(d) < 10) return;
-      wheelLock = true;
-      goTo(deck.i + Math.sign(d));
-    }, { passive: false });
-
-    // Swipe su touch
-    let touch = null;
-    track.addEventListener("touchstart", (e) => {
-      const t = e.touches[0];
-      touch = { x: t.clientX, y: t.clientY };
-    }, { passive: true });
-    track.addEventListener("touchend", (e) => {
-      if (!touch) return;
-      const t = e.changedTouches[0];
-      const dx = t.clientX - touch.x;
-      const dy = t.clientY - touch.y;
-      touch = null;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) goTo(deck.i + (dx < 0 ? 1 : -1));
-    }, { passive: true });
-
-    // Apertura diretta con ancora (#stazioni…)
-    const start = deck.slides.findIndex((s) => `#${s.id}` === location.hash);
-    goTo(Math.max(0, start), { instant: true, force: true });
-    addEventListener("hashchange", () => {
-      const i = deck.slides.findIndex((s) => `#${s.id}` === location.hash);
-      if (i >= 0) goTo(i);
-    });
-  }
-
-  function canScroll(el, dy) {
-    if (el.scrollHeight <= el.clientHeight + 1) return false;
-    return dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0;
-  }
-
-  function goTo(i, { instant = false, force = false } = {}) {
-    const n = deck.slides.length;
-    i = Math.max(0, Math.min(n - 1, i));
-    if (i === deck.i && !force) return;
-
-    const leaving = deck.slides[deck.i];
-    if (leaving && i !== deck.i) deck.onLeave[leaving.id]?.();
-    deck.i = i;
-
-    const track = $("#deck-track");
-    if (instant) track.style.transition = "none";
-    track.style.transform = `translate3d(${-i * 100}%, 0, 0)`;
-    if (instant) { void track.offsetWidth; track.style.transition = ""; }
-
-    deck.slides.forEach((s, k) => {
-      const on = k === i;
-      s.classList.toggle("is-active", on);
-      s.inert = !on;
-      s.setAttribute("aria-hidden", String(!on));
-      if (on) s.scrollTop = 0;
-    });
-    $$("#deck-menu [data-go]").forEach((b, k) => (k === i ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current")));
-    $("#deck-count").textContent = pad(i + 1);
-    $("#deck-progress").style.width = `${((i + 1) / n) * 100}%`;
-    $(".deck-arrow--prev").disabled = i === 0;
-    $(".deck-arrow--next").disabled = i === n - 1;
-    history.replaceState(null, "", `#${deck.slides[i].id}`);
-  }
-
-  /* =========================================================
-     01 · COVER: titolo a onda
-     ========================================================= */
+  /* ---------- COVER: titolo a onda ---------- */
   function initHero() {
     const title = $("#hero-title");
     $$("[data-split]", title).forEach((word, w) => {
+      const chars = word.textContent.trim(); // il testo reale resta nel markup: se lo script non parte, la cover è comunque completa
       const outline = word.hasAttribute("data-outline");
-      word.innerHTML = [...word.dataset.split]
+      word.innerHTML = [...chars]
         .map((ch, i) => `<span class="hero-letter${outline ? " outline" : ""}" style="--i:${i + w * 5}">${ch}</span>`)
         .join("");
     });
 
     const letters = $$(".hero-letter", title);
-    const hero = $("#cover");
+    const hero = $("#hero");
     let idleTimer;
 
     hero.addEventListener("pointermove", (e) => {
@@ -207,127 +89,116 @@
       title.classList.add("hero-idle");
     }
 
-    // Mini linea con i colori delle 20 stazioni: apre la stazione nella slide 04
+    // Mini linea con i colori delle 20 stazioni
     $("#hero-line").innerHTML = STATIONS.map(
-      (s, i) => `<button type="button" data-station-goto="${i}" title="${s.num} ${s.name} · ${s.genre}" aria-label="${s.num} ${s.name}, ${s.genre}" class="block w-2.5 h-2.5 md:w-3 md:h-3 rounded-full ring-2 ring-night hover:scale-150 transition-transform" style="background:${s.color}"></button>`
+      (s) => `<button type="button" data-goto="${s.id}" title="${s.num} ${s.name} · ${s.genre}" class="block w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full ring-2 ring-night hover:scale-150 transition-transform" style="background:${s.color}"></button>`
     ).join("");
-    $("#hero-line").addEventListener("click", (e) => {
-      const b = e.target.closest("[data-station-goto]");
-      if (!b) return;
-      selectStation(Number(b.dataset.stationGoto));
-      goTo(slideIndex("stazioni"));
-    });
+
+    const clock = $("#clock");
+    const tick = () => {
+      clock.textContent = new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
+    };
+    tick();
+    setInterval(tick, 10_000);
   }
 
-  const slideIndex = (id) => deck.slides.findIndex((s) => s.id === id);
-
-  /* =========================================================
-     02 · INSIGHT: togli le cuffie
-     ========================================================= */
-  function initHeadphones() {
-    const slide = $("#insight");
-    const btn = $("#headphones-toggle");
-    const status = $("#headphones-status");
-    btn.addEventListener("click", () => {
-      const muffled = slide.classList.toggle("muffled");
-      $("[data-label]", btn).textContent = muffled ? "Togli le cuffie" : "Rimetti le cuffie";
-      status.textContent = muffled ? "● Cuffie: ON" : "○ Cuffie: OFF";
-      status.classList.toggle("text-spotify", !muffled);
-    });
+  /* ---------- MARQUEE generi ---------- */
+  function initMarquee() {
+    const items = STATIONS.map(
+      (s) => `<span class="inline-flex items-center gap-4 px-4">${s.genre}<span class="inline-block w-4 h-4 md:w-5 md:h-5 border-2 border-night" style="background:${s.color}"></span></span>`
+    ).join("");
+    $("#marquee-genres").innerHTML = `<div class="marquee__track">${items}${items}</div>`;
   }
 
-  /* =========================================================
-     04 · STAZIONI: una alla volta, scelte dalla linea
-     ========================================================= */
-  const station = { i: 0 };
-
-  function initStations() {
-    const line = $("#station-line");
-    line.innerHTML = STATIONS.map(
-      (s, i) => `<button type="button" class="line-stop" data-station="${i}" style="--c:${s.color}" title="${s.name} · ${s.genre}" aria-label="${s.num} ${s.name}, ${s.genre}"><span class="line-dot"></span><span class="line-num">${s.num}</span></button>`
+  /* ---------- 03 · STAZIONI ---------- */
+  function initStationsGrid() {
+    $("#stations-grid").innerHTML = STATIONS.map(
+      (s) => `
+      <button type="button" class="station-card reveal text-left bg-night p-4 sm:p-5 flex flex-col gap-4 min-h-[15rem] sm:min-h-[17rem]" style="--c:${s.color};--ink:${ink(s.color)}" data-goto="${s.id}">
+        <div class="flex justify-between items-baseline gap-3">
+          <span class="font-display text-3xl leading-none">${s.num}</span>
+          <span class="t-label opacity-60">L1</span>
+        </div>
+        ${symbolSlot(s, "w-12 h-12 sm:w-16 sm:h-16")}
+        <div class="mt-auto">
+          <h3 class="font-display uppercase text-xl sm:text-[1.5rem] leading-[0.95]">${s.name}</h3>
+          <p class="t-label mt-2 leading-relaxed">${s.genre}</p>
+          <div class="flex items-center gap-2 mt-3">
+            <span class="station-swatch h-3 flex-1" style="background:${s.color}"></span>
+            <span class="font-mono text-[10px] opacity-60">${s.color}${star(s.confirmed.color)}</span>
+          </div>
+        </div>
+      </button>`
     ).join("");
-    line.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-station]");
-      if (b) selectStation(Number(b.dataset.station));
-    });
-    $$("[data-station-step]").forEach((b) =>
-      b.addEventListener("click", () => selectStation(station.i + Number(b.dataset.stationStep)))
+  }
+
+  /* ---------- 04 · SISTEMA CROMATICO ---------- */
+  function initPalette() {
+    $("#palette-primary").innerHTML = PRIMARY.map(
+      (p) => `
+      <button type="button" data-copy="${p.hex}" class="swatch-big text-left p-6 md:p-8 min-h-[9rem] flex flex-col justify-between" style="background:${p.hex};color:${ink(p.hex)}">
+        <span class="t-label">Primario</span>
+        <span>
+          <span class="block t-lg font-display uppercase">${p.name}</span>
+          <span class="flex flex-wrap gap-x-6 font-mono text-xs mt-2"><span>HEX ${p.hex}</span><span>RGB ${p.rgb}</span></span>
+        </span>
+      </button>`
+    ).join("");
+
+    $("#palette-secondary").innerHTML = STATIONS.map(
+      (s) => `
+      <button type="button" data-copy="${s.color}" class="swatch text-left p-3 min-h-[6.5rem] flex flex-col justify-between" style="background:${s.color};color:${ink(s.color)}" title="${s.genre} · ${s.color}">
+        <span class="font-display text-xl leading-none">${s.num}</span>
+        <span>
+          <span class="block text-[11px] font-bold leading-tight">${s.genre}</span>
+          <span class="block font-mono text-[10px] mt-1 opacity-80">${s.color}${star(s.confirmed.color)}</span>
+        </span>
+      </button>`
+    ).join("");
+
+    const pairingGrid = $("#palette-pairing");
+    pairingGrid.innerHTML = STATIONS.map((s) => {
+      const p = PAIRINGS[s.pairing];
+      return `
+      <div class="pair-tile flex flex-col min-h-[9rem]" data-pairing="${s.pairing}">
+        <div class="flex-1 p-3 flex flex-col justify-between" style="background:${s.color};color:${p.hex}">
+          <span class="t-label">${s.num} · ${s.name}</span>
+          <span class="font-display uppercase text-xl leading-[0.95]">${s.genre}</span>
+        </div>
+        <div class="flex items-center justify-between px-3 py-2 t-label" style="background:${p.hex};color:${ink(p.hex)}">
+          <span>+ ${p.label}${star(s.confirmed.pairing)}</span>
+          <span class="font-mono normal-case tracking-normal">${p.hex}</span>
+        </div>
+      </div>`;
+    }).join("");
+
+    $$("#pairing-filter [data-filter]").forEach((btn) =>
+      btn.addEventListener("click", () => {
+        const f = btn.dataset.filter;
+        $$("#pairing-filter .chip").forEach((c) => c.classList.toggle("is-active", c === btn));
+        $$(".pair-tile", pairingGrid).forEach((t) => t.classList.toggle("is-dimmed", f !== "tutti" && t.dataset.pairing !== f));
+      })
     );
-    deck.onKey.stazioni = (d) => selectStation(station.i + d);
-    selectStation(0);
-  }
 
-  function selectStation(i) {
-    station.i = wrap(i, STATIONS.length);
-    const s = STATIONS[station.i];
-    const p = PAIRINGS[s.pairing];
-
-    $("#station-detail").innerHTML = `
-      <div class="panel-swap">
-        <p class="font-display leading-none text-[clamp(3rem,min(7vw,10svh),7rem)]" style="color:${onDark(s.color)}">${s.num}</p>
-        <h3 class="t-lg font-display uppercase mt-3">${s.name}</h3>
-        <p class="t-label text-paper/60 mt-3">${s.genre}</p>
-        <dl class="grid grid-cols-2 gap-6 max-w-sm mt-[3svh] border-t border-paper/20 pt-4">
-          <div>
-            <dt class="t-label text-paper/50">Colore${star(s.confirmed.color)}</dt>
-            <dd class="flex items-center gap-2 mt-2 font-mono text-sm"><span class="w-4 h-4" style="background:${s.color}"></span>${s.color}</dd>
-          </div>
-          <div>
-            <dt class="t-label text-paper/50">Abbinamento${star(s.confirmed.pairing)}</dt>
-            <dd class="flex items-center gap-2 mt-2 text-sm font-bold"><span class="w-4 h-4 border border-paper/30" style="background:${p.hex}"></span>${p.label}</dd>
-          </div>
-        </dl>
-      </div>`;
-
-    // Pannello nell'abbinamento finale: fondo colore del genere, segno nel colore primario
-    const visual = $("#station-visual");
-    visual.style.backgroundColor = s.color;
-    visual.style.color = p.hex;
-    visual.innerHTML = `
-      <div class="corner t-label"><span>L1 · ${s.num}</span><span>${s.name}</span></div>
-      ${symbol(s, p.hex, "panel-swap")}
-      <div class="genre-tag"><span class="font-display uppercase leading-[0.9] text-[clamp(1.75rem,3.2vw,3.25rem)]">${s.genre}</span></div>`;
-
-    $("#station-count").textContent = `${s.num} / ${pad(STATIONS.length)}`;
-    $$("#station-line .line-stop").forEach((b, k) => {
-      b.classList.toggle("is-active", k === station.i);
-      b.setAttribute("aria-pressed", String(k === station.i));
+    // Clic su un colore: copia l'HEX negli appunti
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-copy]");
+      if (!el) return;
+      const hex = el.dataset.copy;
+      navigator.clipboard?.writeText(hex).then(() => toast(`${hex} copiato`), () => toast(hex));
     });
   }
 
-  /* =========================================================
-     05 · USER FLOW + MAPPA
-     ========================================================= */
-  const flow = { i: 0 };
-
-  function initFlow() {
-    const list = $("#flow-steps");
-    list.innerHTML = FLOW.map(
-      (f, i) => `<li><button type="button" data-flow="${i}" aria-label="Step ${f.num}: ${f.title}">${f.num}</button></li>`
-    ).join("");
-    list.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-flow]");
-      if (b) selectFlow(Number(b.dataset.flow));
-    });
-    deck.onKey.flow = (d) => selectFlow(Math.max(0, Math.min(FLOW.length - 1, flow.i + d)));
-    selectFlow(0);
+  let toastTimer;
+  function toast(msg) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("is-on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("is-on"), 1600);
   }
 
-  function selectFlow(i) {
-    flow.i = i;
-    const f = FLOW[i];
-    $("#flow-detail").innerHTML = `
-      <div class="panel-swap">
-        <p class="font-display leading-none text-[clamp(3.5rem,min(7vw,12svh),7rem)] text-spotify">${f.num}</p>
-        <h3 class="t-md font-display uppercase mt-3">${f.title}</h3>
-        <p class="t-body text-paper/70 mt-4">${f.text}</p>
-      </div>`;
-    $$("#flow-steps button").forEach((b, k) => {
-      b.classList.toggle("is-active", k === i);
-      b.classList.toggle("is-done", k < i);
-    });
-  }
-
+  /* ---------- 05 · MAPPA INTERATTIVA ---------- */
   const map = { active: 0, playing: false, raf: null, timer: null, train: null };
 
   function initMap() {
@@ -336,7 +207,7 @@
     const d = "M" + pts.map((p) => `${p.x},${p.y}`).join(" L");
 
     svg.innerHTML = `
-      <path d="${d}" fill="none" stroke="#F2EFE8" stroke-opacity=".14" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="#F2EFE8" stroke-opacity=".16" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
       <path id="map-progress" d="${d}" fill="none" stroke="#1ED760" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/>
     `;
     const progress = $("#map-progress", svg);
@@ -369,9 +240,9 @@
       g.innerHTML = `
         <circle class="pulse" cx="${x}" cy="${y}" r="12" fill="${s.color}"/>
         <circle class="ring" cx="${x}" cy="${y}" r="12" fill="${NIGHT}" stroke="${s.color}" stroke-width="5"/>
-        <text class="map-label" x="${x + o.dx}" y="${y + o.dy}" text-anchor="${o.anchor}">${s.name}</text>
+        <text class="map-label" x="${x + o.dx}" y="${y + o.dy}" text-anchor="${o.anchor}">${s.num} ${s.name}</text>
       `;
-      const pick = () => { stopJourney(); selectStop(i); };
+      const pick = () => { stopJourney(); selectStation(i); };
       g.addEventListener("click", pick);
       g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
       svg.appendChild(g);
@@ -382,9 +253,14 @@
     svg.appendChild(train);
     map.train = train;
 
+    // Selettore a chip per mobile
+    $("#map-chips").innerHTML = STATIONS.map(
+      (s, i) => `<button type="button" data-chip="${i}" class="chip shrink-0"><span class="chip-dot" style="background:${s.color}"></span>${s.num} ${s.name}</button>`
+    ).join("");
+    $$("#map-chips [data-chip]").forEach((b) => b.addEventListener("click", () => { stopJourney(); selectStation(Number(b.dataset.chip)); }));
+
     $("#play-journey").addEventListener("click", () => (map.playing ? stopJourney() : playJourney()));
-    deck.onLeave.flow = stopJourney;
-    selectStop(0);
+    selectStation(0);
   }
 
   function placeTrain(distance) {
@@ -393,12 +269,49 @@
     map.progress.style.strokeDashoffset = map.total - distance;
   }
 
-  function selectStop(i) {
+  function selectStation(i) {
     map.active = i;
-    const s = STATIONS[i];
     $$(".map-node").forEach((n, k) => n.classList.toggle("is-active", k === i));
+    $$("#map-chips .chip").forEach((c, k) => c.classList.toggle("is-active", k === i));
     if (!map.playing) placeTrain(map.dist[i]);
-    $("#map-caption").innerHTML = `<span class="inline-block w-2.5 h-2.5 rounded-full mr-2 align-middle" style="background:${s.color}"></span>${s.num} ${s.name} <span class="text-paper/50">— ${s.genre}</span>`;
+    renderPanel(STATIONS[i]);
+  }
+
+  function renderPanel(s) {
+    const p = PAIRINGS[s.pairing];
+    const panel = $("#station-panel");
+    panel.innerHTML = `
+      <div class="panel-swap h-full flex flex-col">
+        <div class="flex justify-between items-start gap-4">
+          <span class="font-display text-6xl leading-none" style="color:${s.color}">${s.num}</span>
+          ${symbolSlot(s, "w-16 h-16")}
+        </div>
+        <h3 class="font-display uppercase text-3xl md:text-4xl leading-[0.95] mt-5">${s.name}</h3>
+        <p class="t-label mt-3 self-start px-2 py-1" style="background:${s.color};color:${ink(s.color)}">${s.genre}</p>
+
+        <dl class="grid grid-cols-2 gap-px bg-paper/15 border border-paper/15 mt-5 text-sm">
+          <div class="bg-night p-3">
+            <dt class="t-label text-paper/50">Colore${star(s.confirmed.color)}</dt>
+            <dd class="flex items-center gap-2 mt-2 font-mono"><span class="w-4 h-4" style="background:${s.color}"></span>${s.color}</dd>
+          </div>
+          <div class="bg-night p-3">
+            <dt class="t-label text-paper/50">Abbinamento${star(s.confirmed.pairing)}</dt>
+            <dd class="flex items-center gap-2 mt-2 font-bold"><span class="w-4 h-4 border border-paper/30" style="background:${p.hex}"></span>${p.label}</dd>
+          </div>
+        </dl>
+        <p class="t-label text-paper/40 mt-4">Scheda stazione e line-up in definizione</p>
+
+        <div class="flex gap-px mt-auto pt-5">
+          <button type="button" data-step="-1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night">← Prec.</button>
+          <button type="button" data-step="1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night">Succ. →</button>
+        </div>
+      </div>`;
+    $$("[data-step]", panel).forEach((b) =>
+      b.addEventListener("click", () => {
+        stopJourney();
+        selectStation((map.active + Number(b.dataset.step) + STATIONS.length) % STATIONS.length);
+      })
+    );
   }
 
   function playJourney() {
@@ -407,7 +320,7 @@
     const SPEED = 0.45; // unità SVG per ms
     const DWELL = 1100; // sosta in stazione (ms)
     let from = map.active === STATIONS.length - 1 ? 0 : map.active;
-    selectStop(from);
+    selectStation(from);
     placeTrain(map.dist[from]);
 
     const leg = () => {
@@ -421,7 +334,7 @@
         placeTrain(a + (b - a) * eased);
         if (t < 1) { map.raf = requestAnimationFrame(step); return; }
         from += 1;
-        selectStop(from);
+        selectStation(from);
         map.timer = setTimeout(leg, DWELL);
       };
       map.raf = requestAnimationFrame(step);
@@ -438,22 +351,148 @@
     placeTrain(map.dist[map.active]);
   }
 
-  /* =========================================================
-     06 · AMBIENT ACTIVATION: galleria + lightbox
-     ========================================================= */
+  // Qualsiasi elemento con data-goto apre la stazione sulla mappa (slide 04)
+  function initGoto() {
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-goto]");
+      if (!el) return;
+      e.preventDefault();
+      stopJourney();
+      selectStation(STATIONS.findIndex((s) => s.id === el.dataset.goto));
+      window.MetrowaveDeck?.goTo("mappa");
+    });
+  }
+
+  /* ---------- 06 · USER FLOW — 7 slide ---------- */
+  // Placeholder per i visual non ancora progettati: area dedicata, non un
+  // mockup — in attesa dei materiali reali (ticket, quiz UI, QR, ecc.)
+  const FLOW_PLACEHOLDER = [
+    "VISUAL IN SVILUPPO — BIGLIETTO DIGITALE METRO WAVE",
+    null, // step 2: demo quiz già funzionante, nessun placeholder
+    "VISUAL IN SVILUPPO — MAPPA NELL'APP METRO WAVE",
+    "VISUAL IN SVILUPPO — SCANSIONE QR CODE",
+    "VISUAL IN SVILUPPO — PERFORMANCE A BORDO",
+    "VISUAL IN SVILUPPO — ESPERIENZA IN STAZIONE",
+    "VISUAL IN SVILUPPO — MERCHANDISING & REWARD"
+  ];
+
+  function initFlowSlides() {
+    $$(".flow-slide").forEach((section) => {
+      const i = Number(section.dataset.flowSlide);
+      const f = FLOW[i];
+      section.innerHTML = `
+        <div class="slide-inner">
+          <div class="section-head grid grid-cols-12 gap-4 t-label">
+            <span class="col-span-2">06</span>
+            <span class="col-span-7">User flow — la notte di un passeggero</span>
+            <span class="col-span-3 text-right">Step ${f.num} / 07</span>
+          </div>
+          <div class="flex-1 min-h-0 flex flex-col gap-6">
+            <div class="flow-head">
+              <div>
+                <span class="flow-num">${f.num}</span>
+                <h2 class="t-lg font-display uppercase mt-1">${f.title}</h2>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end max-w-sm">${f.tags.map((t) => `<span class="chip">${t}</span>`).join("")}</div>
+            </div>
+            <p class="t-lead">${f.text}</p>
+            <div class="flow-visual${f.demo === "quiz" ? " has-demo" : ""}" id="flow-visual-${i}"></div>
+          </div>
+        </div>`;
+      if (f.demo === "quiz") {
+        $(`#flow-visual-${i}`, section).innerHTML = quizMarkup();
+        initQuiz($(`#flow-visual-${i}`, section));
+      } else if (FLOW_PLACEHOLDER[i]) {
+        $(`#flow-visual-${i}`, section).innerHTML = `<p>[ ${FLOW_PLACEHOLDER[i]} ]</p>`;
+      }
+    });
+  }
+
+  // Demo del quiz: la sfida è la stazione all'estremo opposto della linea
+  function quizMarkup() {
+    return `
+      <div class="w-full">
+        <p class="t-label text-paper/50 mb-3">Demo · Che genere ascolti sempre?</p>
+        <div class="flex flex-wrap gap-2" id="quiz-options">
+          ${STATIONS.map((s, k) => `<button type="button" class="chip" data-quiz="${k}"><span class="chip-dot" style="background:${s.color}"></span>${s.genre}</button>`).join("")}
+        </div>
+        <div class="mt-4 min-h-[4.5rem]" id="quiz-result"><p class="text-sm text-paper/50">Scegli un genere per ricevere la tua sfida.</p></div>
+      </div>`;
+  }
+
+  function initQuiz(panel) {
+    $$("[data-quiz]", panel).forEach((b) =>
+      b.addEventListener("click", () => {
+        const k = Number(b.dataset.quiz);
+        const home = STATIONS[k];
+        const dare = STATIONS[(k + STATIONS.length / 2) % STATIONS.length];
+        $$("[data-quiz]", panel).forEach((c) => c.classList.toggle("is-active", c === b));
+        $("#quiz-result", panel).innerHTML = `
+          <div class="grid sm:grid-cols-2 gap-px bg-paper/15 panel-swap">
+            <div class="bg-night p-4"><p class="t-label text-paper/50">La tua comfort zone</p><p class="font-display uppercase text-2xl mt-2">${home.name}</p><p class="text-sm text-paper/60">${home.genre}</p></div>
+            <div class="p-4" style="background:${dare.color};color:${ink(dare.color)}"><p class="t-label">La tua sfida</p><p class="font-display uppercase text-2xl mt-2">${dare.name}</p><p class="text-sm">${dare.genre}</p></div>
+          </div>`;
+      })
+    );
+  }
+
+  /* ---------- 07 · TIMETABLE ---------- */
+  function initTimetable() {
+    const table = $("#timetable-table");
+    const rows = [
+      { name: "A bordo", genre: "Vagoni · artisti emergenti", color: "#1ED760", acts: ["Live set", "Live set", "Live set"] },
+      ...STATIONS.map((s) => ({ name: `${s.num} ${s.name}`, genre: s.genre, color: s.color, acts: ["TBA", "TBA", "TBA"] }))
+    ];
+    table.innerHTML = `
+      <thead class="t-label text-paper/50 sticky top-0 bg-night z-10">
+        <tr class="border-b-2 border-paper">
+          <th class="p-3 w-[34%] font-normal">Stazione</th>
+          ${SLOTS.map((sl) => `<th class="p-3 font-normal">${sl.label}<br/><span class="text-paper/40">${fmtMinutes(sl.from)}—${fmtMinutes(sl.to)}</span></th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map((r) => `
+          <tr class="border-b border-paper/10" style="--c:${r.color};--ink:${ink(r.color)}">
+            <td class="px-3 py-2.5">
+              <span class="flex items-center gap-3">
+                <span class="w-3 h-3 shrink-0" style="background:${r.color}"></span>
+                <span><span class="font-display uppercase text-lg leading-none">${r.name}</span><span class="block font-mono text-[10px] uppercase tracking-widest text-paper/50 mt-1">${r.genre}</span></span>
+              </span>
+            </td>
+            ${r.acts.map((act, k) => `<td class="slot-cell px-3 py-2.5 text-sm font-bold" data-slot="${k}">${act}</td>`).join("")}
+          </tr>`).join("")}
+      </tbody>`;
+
+    const scrubber = $("#tt-scrubber");
+    const update = () => {
+      const m = Number(scrubber.value);
+      $("#tt-time").textContent = fmtMinutes(m);
+      const h = HEADWAY.find((x) => m >= x.from && m < x.to);
+      $("#tt-headway").textContent = h.every;
+      $("#tt-headway-note").textContent = h.note;
+      $$(".slot-cell", table).forEach((cell) => {
+        const sl = SLOTS[cell.dataset.slot];
+        cell.classList.toggle("is-live", m >= sl.from && m < sl.to);
+        cell.classList.toggle("is-past", m >= sl.to);
+      });
+    };
+    scrubber.addEventListener("input", update);
+    update();
+  }
+
+  /* ---------- 08 · AMBIENT ACTIVATION: galleria editoriale + lightbox ---------- */
   const shotImg = (shot, cls, lazy) =>
     `<img src="${shot.src}" alt="${shot.title}: ${shot.caption}" class="${cls}"${lazy ? ' loading="lazy"' : ""} />`;
 
   function initActivation() {
     const SHOTS = window.METROWAVE_ACTIVATION;
-    const gallery = $("#activation-gallery");
-    gallery.innerHTML = SHOTS.map(
+    $("#activation-gallery").innerHTML = SHOTS.map(
       (shot, i) => `
-      <button type="button" class="shot" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
-        ${shotImg(shot, "", i > 0)}
-        <div class="shot-meta">
+      <button type="button" class="shot group relative overflow-hidden bg-night text-left" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
+        <div class="shot-media aspect-[4/5] md:aspect-[3/4]">${shotImg(shot, "w-full h-full block object-cover", true)}</div>
+        <div class="shot-meta absolute inset-x-0 bottom-0 p-4 md:p-5">
           <p class="t-label text-paper/70">${shot.place}</p>
-          <p class="font-display uppercase text-2xl md:text-3xl leading-none mt-2">${shot.title}</p>
+          <p class="font-display uppercase text-2xl leading-none mt-2">${shot.title}</p>
         </div>
         <span class="shot-open t-label" aria-hidden="true">⤢</span>
       </button>`
@@ -463,7 +502,7 @@
     let current = 0;
     let lastFocus = null;
     const show = (i) => {
-      current = wrap(i, SHOTS.length);
+      current = (i + SHOTS.length) % SHOTS.length;
       const shot = SHOTS[current];
       $("#lightbox-media").innerHTML = shotImg(shot, "block object-contain");
       $("#lightbox-count").textContent = `${pad(current + 1)} / ${pad(SHOTS.length)}`;
@@ -475,17 +514,19 @@
       lastFocus = document.activeElement;
       show(i);
       box.hidden = false;
+      document.body.classList.add("lightbox-open");
       void box.offsetWidth; // applica display prima della dissolvenza
       box.classList.add("is-open");
       $("[data-close]", box).focus();
     };
     const close = () => {
       box.classList.remove("is-open");
+      document.body.classList.remove("lightbox-open");
       setTimeout(() => (box.hidden = true), 250);
       lastFocus?.focus();
     };
 
-    gallery.addEventListener("click", (e) => {
+    $("#activation-gallery").addEventListener("click", (e) => {
       const tile = e.target.closest("[data-shot]");
       if (tile) open(Number(tile.dataset.shot));
     });
@@ -505,43 +546,103 @@
         const items = $$("button", box);
         const k = items.indexOf(document.activeElement);
         e.preventDefault();
-        items[wrap(k + (e.shiftKey ? -1 : 1), items.length)].focus();
+        items[(k + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
       }
     });
   }
 
-  /* =========================================================
-     07 · TIMETABLE
-     ========================================================= */
-  function initTimetable() {
-    $("#tt-slots").innerHTML = SLOTS.map(
-      (sl) => `
-      <li class="tt-slot">
-        <p class="font-display uppercase text-3xl leading-none tt-name">${sl.label}</p>
-        <p class="font-mono text-xs text-paper/50 mt-2">${fmtMinutes(sl.from)}—${fmtMinutes(sl.to)}</p>
-        <p class="text-sm text-paper/70 mt-3">${sl.note}</p>
-      </li>`
-    ).join("");
+  /* ---------- DECK: motore di navigazione a slide ---------- */
+  function initDeck() {
+    const slides = $$("[data-section]");
+    const total = slides.length;
+    const counter = $("#slide-counter");
+    const progress = $("#progress");
+    const navLinks = $$("[data-nav]");
+    const prevBtn = $("#nav-prev");
+    const nextBtn = $("#nav-next");
+    let current = 0;
+    let animating = false;
 
-    const scrubber = $("#tt-scrubber");
-    const cells = $$(".tt-slot");
-    const update = () => {
-      const m = Number(scrubber.value);
-      $("#tt-time").textContent = fmtMinutes(m);
-      const h = HEADWAY.find((x) => m >= x.from && m < x.to);
-      $("#tt-headway").textContent = h.every;
-      $("#tt-headway-note").textContent = h.note;
-      cells.forEach((cell, k) => {
-        const sl = SLOTS[k];
-        cell.classList.toggle("is-live", m >= sl.from && m < sl.to);
-        cell.classList.toggle("is-past", m >= sl.to);
-      });
-    };
-    scrubber.addEventListener("input", update);
-    update();
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function revealIn(slide) {
+      $$(".reveal", slide).forEach((el) => el.classList.add("is-in"));
+    }
+
+    function goTo(target, { silent } = {}) {
+      const idx = typeof target === "number" ? target : slides.findIndex((s) => s.id === target);
+      if (idx < 0 || idx === current || idx >= total) return;
+      const dir = idx > current ? 1 : -1;
+      const prevSlide = slides[current];
+      const nextSlide = slides[idx];
+
+      prevSlide.classList.remove("is-active");
+      prevSlide.classList.toggle("is-prev-dir", dir > 0);
+      nextSlide.classList.remove("is-prev-dir");
+      // force reflow così il browser applica lo stato "entrante" prima di animare
+      void nextSlide.offsetWidth;
+      nextSlide.classList.add("is-active");
+      revealIn(nextSlide);
+
+      current = idx;
+      updateChrome();
+      if (!silent) nextSlide.querySelector("h1, h2")?.setAttribute("tabindex", "-1");
+    }
+
+    function updateChrome() {
+      counter.textContent = `${pad(current + 1)} / ${pad(total)}`;
+      progress.style.width = `${((current + 1) / total) * 100}%`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+      const activeId = slides[current].id;
+      const group = activeId.startsWith("flow-") ? "flow-1" : activeId === "activation" ? "promo" : activeId;
+      navLinks.forEach((l) => l.classList.toggle("text-wred", l.dataset.gotoSlide === group));
+    }
+
+    prevBtn.addEventListener("click", () => goTo(current - 1));
+    nextBtn.addEventListener("click", () => goTo(current + 1));
+
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-goto-slide]");
+      if (!el) return;
+      e.preventDefault();
+      goTo(el.dataset.gotoSlide);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.target.closest("input, textarea")) return;
+      if (document.body.classList.contains("lightbox-open")) return;
+      if (["ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+      else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); goTo(current - 1); }
+      else if (e.key === "Home") { e.preventDefault(); goTo(0); }
+      else if (e.key === "End") { e.preventDefault(); goTo(total - 1); }
+    });
+
+    // Swipe touch (mobile): orizzontale, soglia 48px, ignora gesti verticali
+    // (così lo scroll interno di una slide lunga resta libero).
+    let touchStartX = 0, touchStartY = 0;
+    document.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0) goTo(current + 1); else goTo(current - 1);
+    }, { passive: true });
+
+    // Riapri su un hash diretto (#concept…) alla prima apertura
+    const startId = location.hash?.slice(1);
+    const startIdx = startId ? slides.findIndex((s) => s.id === startId) : 0;
+    slides.forEach((s, i) => s.classList.toggle("is-active", i === (startIdx >= 0 ? startIdx : 0)));
+    current = startIdx >= 0 ? startIdx : 0;
+    revealIn(slides[current]);
+    updateChrome();
+
+    window.MetrowaveDeck = { goTo, get current() { return current; } };
   }
 
-  /* ---------- CURSORE ---------- */
   function initCursor() {
     const c = $(".cursor");
     window.addEventListener("pointermove", (e) => {
@@ -551,13 +652,15 @@
     });
   }
 
-  initDeck();
   initHero();
-  initHeadphones();
-  initStations();
-  initFlow();
+  initMarquee();
+  initStationsGrid();
+  initPalette();
   initMap();
-  initActivation();
+  initGoto();
+  initFlowSlides();
   initTimetable();
+  initActivation();
+  initDeck();
   initCursor();
 })();
