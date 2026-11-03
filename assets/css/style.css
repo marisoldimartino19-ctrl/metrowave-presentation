@@ -1,0 +1,295 @@
+/* =========================================================
+   METROWAVE — stile base
+   ========================================================= */
+
+:root {
+  --night: #07070c;
+  --abyss: #0a0f2e;
+  --paper: #f2efe8;
+  --red: #ff2d1f;
+  --orange: #ff6a00;
+  --spotify: #1ed760;
+  --line: rgba(242, 239, 232, 0.14);
+}
+
+/* ---------- LAYOUT: sezioni a misura di viewport ----------
+   scroll-padding-top = altezza dell'header: ogni ancora (menu,
+   frecce, "Scendi") atterra con la sezione a filo sotto la barra.
+   Ogni sezione occupa esattamente l'area visibile restante. */
+:root {
+  --header-h: 56px;
+  --gutter: 1rem;
+  --view-h: calc(100svh - var(--header-h));
+  --section-pt: clamp(1rem, 2.5vh, 1.75rem);
+  --section-pb: clamp(2rem, 4.5vh, 3.5rem);
+  --block-gap: clamp(1.5rem, 3.5vh, 3rem);
+}
+@media (min-width: 768px) { :root { --gutter: 2rem; } }
+@media (min-width: 1536px) { :root { --gutter: 3rem; } }
+
+html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); }
+
+.section {
+  position: relative;
+  min-height: calc(100vh - var(--header-h));
+  min-height: var(--view-h);
+  padding: var(--section-pt) var(--gutter) var(--section-pb);
+  display: flex;
+  flex-direction: column;
+}
+.section-head {
+  padding-bottom: .75rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--block-gap);
+}
+/* Il corpo riempie lo spazio restante e distribuisce i blocchi:
+   niente vuoti morti sotto quando il contenuto è più corto del viewport. */
+.section-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--block-gap);
+}
+
+/* L'hero parte da scroll 0, sotto la barra: compensa l'header
+   e occupa l'intero schermo. */
+.section--hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: calc(var(--header-h) + 1rem);
+  padding-bottom: 1.25rem;
+}
+
+/* ---------- SCALA TIPOGRAFICA ----------
+   Titoli massimalisti con tetto massimo: non invadono mai
+   il contenuto, né su schermi enormi né su mobile. */
+/* t-mega / t-xl limitati anche in altezza (svh): titolo e testi
+   convivono nella stessa schermata anche su monitor bassi. */
+.t-mega { font-size: clamp(2.5rem, min(11vw, 12.5svh), 11rem); line-height: .92; letter-spacing: -.01em; text-wrap: balance; }
+.t-xl   { font-size: clamp(2.25rem, min(7vw, 11svh), 7.5rem); line-height: .92; text-wrap: balance; }
+.t-lg   { font-size: clamp(1.9rem, 3.4vw, 3.5rem); line-height: .92; }
+.t-md   { font-size: clamp(1.6rem, 2.4vw, 2.5rem); line-height: .95; }
+.t-lead { font-size: clamp(1.125rem, 1.45vw, 1.5rem); line-height: 1.4; max-width: 38ch; }
+.t-body { font-size: 1rem; line-height: 1.6; max-width: 60ch; }
+.t-label { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* Box informativi: altezza minima uniforme, contenuto in colonna */
+.info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 2.5vw, 2.5rem);
+  min-height: 11rem;
+}
+.info-box > :last-child { margin-top: auto; }
+body {
+  background: var(--night);
+  color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--red); color: var(--night); }
+
+/* Grana da carta stampata */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  animation: grain 1.2s steps(6) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  33% { transform: translate(-3%, 2%); }
+  66% { transform: translate(2%, -3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ---------- HERO ---------- */
+/* Proporzioni monumentali originali (23vw). Il tetto in svh entra
+   in gioco solo su schermi bassi, per non spingere fuori la info grid. */
+.hero-word {
+  font-size: clamp(5.5rem, min(23vw, 35svh), 28rem);
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+}
+.hero-letter {
+  --f: 0;
+  display: inline-block;
+  transform-origin: 50% 100%;
+  transform: scaleY(calc(1 + var(--f) * 0.38)) translateY(calc(var(--f) * -2%));
+  color: color-mix(in srgb, var(--red) calc(var(--f) * 100%), var(--paper));
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1), color 0.35s;
+  will-change: transform;
+}
+.hero-letter.outline {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--paper);
+}
+.hero-letter.outline:hover,
+.hero-letter.outline.is-hot { color: var(--spotify); -webkit-text-stroke-color: var(--spotify); }
+
+/* Onda idle quando il puntatore è fermo */
+.hero-idle .hero-letter { animation: idle-wave 2.6s ease-in-out infinite; animation-delay: calc(var(--i) * 0.12s); }
+@keyframes idle-wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.12); }
+}
+
+/* ---------- MARQUEE ---------- */
+.marquee { overflow: hidden; white-space: nowrap; }
+.marquee__track { display: inline-flex; animation: marquee 28s linear infinite; }
+.marquee--reverse .marquee__track { animation-direction: reverse; }
+.marquee:hover .marquee__track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* ---------- INSIGHT: "dentro le cuffie" ---------- */
+.muffled .muffle-target {
+  filter: blur(3px) grayscale(1);
+  opacity: 0.35;
+}
+.muffle-target { transition: filter 0.9s ease, opacity 0.9s ease; }
+.muffled .reveal-color { background: #2a2a2e !important; color: #6b6b70 !important; }
+.reveal-color { transition: background 0.9s ease, color 0.9s ease; }
+
+/* ---------- STAZIONI ---------- */
+.station-card {
+  --c: var(--paper);
+  --ink: var(--night);
+  transition: background 0.35s, color 0.35s;
+}
+.station-card:hover, .station-card:focus-visible {
+  background: var(--c);
+  color: var(--ink);
+  outline: none;
+}
+.station-card:is(:hover, :focus-visible) .station-swatch { outline: 1px solid currentColor; }
+/* Sul fondo colore-stazione testo secondario a piena opacità */
+.station-card:is(:hover, :focus-visible) .opacity-60 { opacity: 1; }
+
+/* Simbolo SVG inline: ogni forma usa currentColor. A riposo prende --sym (colore
+   stazione), in hover il colore del testo della card (nero o bianco, il più contrastato). */
+.symbol { display: inline-block; flex-shrink: 0; color: var(--sym); }
+.symbol svg { display: block; width: 100%; height: 100%; }
+.symbol, .symbol * { transition: color 0.35s; }
+.symbol .sym-base { color: #fff; }               /* Colli Aminei: base chiara delle fasce */
+.symbol .sym-accent { color: var(--spotify); }   /* Università: secondo colore */
+.station-card:is(:hover, :focus-visible) .symbol,
+.station-card:is(:hover, :focus-visible) .symbol * { color: var(--ink); }
+
+/* Spazio predisposto per il simbolo grafico della stazione.
+   Quando `symbol` è valorizzato in stations.js viene sostituito da un <img>. */
+.symbol-slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1.5px dashed currentColor;
+  opacity: .45;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: .12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ---------- CHIP ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .45rem .8rem;
+  border: 1px solid rgba(242, 239, 232, .3);
+  font-family: "JetBrains Mono", monospace; font-size: 11px;
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  transition: background .2s, color .2s, border-color .2s;
+}
+button.chip:hover { border-color: var(--paper); }
+.chip.is-active { background: var(--paper); color: var(--night); border-color: var(--paper); }
+.chip-dot { width: .7rem; height: .7rem; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(242, 239, 232, .35); }
+
+/* ---------- PALETTE ---------- */
+.swatch, .swatch-big { transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; cursor: copy; }
+.swatch:hover, .swatch-big:hover { transform: translateY(-3px); box-shadow: 0 10px 0 -4px rgba(0,0,0,.35); position: relative; z-index: 1; }
+.pair-tile { transition: opacity .3s, filter .3s; }
+.pair-tile.is-dimmed { opacity: .15; filter: grayscale(1); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; z-index: 80;
+  transform: translate(-50%, 1rem); opacity: 0; pointer-events: none;
+  background: var(--spotify); color: var(--night); padding: .75rem 1.25rem;
+  transition: opacity .25s, transform .25s;
+}
+.toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- USER FLOW ---------- */
+.flow-step { transition: background .25s, color .25s; }
+.flow-step:hover { background: rgba(242, 239, 232, .05); }
+.flow-step.is-active { background: var(--spotify); color: var(--night); }
+.flow-step.is-active .flow-arrow { opacity: 1; }
+
+/* ---------- AMBIENT ACTIVATION ---------- */
+.silence-glass {
+  border: 1px solid rgba(242, 239, 232, .25);
+  background: linear-gradient(160deg, rgba(242,239,232,.08), rgba(242,239,232,.02));
+}
+.eq-bar {
+  flex: 1; max-width: 14px; height: var(--h);
+  background: var(--spotify); transform-origin: bottom;
+  animation: eq .9s ease-in-out infinite alternate; animation-delay: calc(var(--d) * -1);
+  transition: background .4s, opacity .4s;
+}
+@keyframes eq { from { transform: scaleY(.15); } to { transform: scaleY(1); } }
+/* In silenzio gli artisti suonano (le barre si muovono) ma il suono non esce: barre spente */
+.is-silent .eq-bar { background: rgba(242, 239, 232, .22); }
+
+/* ---------- MAPPA ---------- */
+.map-node { cursor: pointer; }
+.map-node .ring { transition: r 0.3s, fill 0.3s; }
+.map-node:hover .ring, .map-node.is-active .ring { r: 17; }
+.map-node .pulse { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.map-node.is-active .pulse { animation: pulse 1.6s ease-out infinite; }
+@keyframes pulse {
+  0% { opacity: .8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.6); }
+}
+.map-label { font-family: "JetBrains Mono", monospace; font-size: 13px; letter-spacing: .03em; text-transform: uppercase; fill: var(--paper); }
+.map-node.is-active .map-label { fill: var(--c); font-weight: 700; }
+
+.panel-swap { animation: panel-in .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes panel-in { from { opacity: 0; transform: translateY(12px); } }
+
+/* ---------- TIMETABLE ---------- */
+.slot-cell { transition: background .3s, color .3s, opacity .3s; }
+.slot-cell.is-live { background: var(--c); color: var(--ink); }
+.slot-cell.is-past { opacity: .3; }
+
+input[type="range"].scrubber { -webkit-appearance: none; appearance: none; height: 6px; background: var(--line); }
+input[type="range"].scrubber::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--red); border: 0; cursor: grab; }
+input[type="range"].scrubber::-moz-range-thumb { width: 28px; height: 28px; background: var(--red); border: 0; border-radius: 0; cursor: grab; }
+
+/* ---------- REVEAL ON SCROLL ---------- */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* ---------- CURSORE ---------- */
+.cursor {
+  position: fixed; top: 0; left: 0; width: 14px; height: 14px;
+  border-radius: 999px; background: var(--paper);
+  mix-blend-mode: difference; pointer-events: none; z-index: 70;
+  transform: translate(-50%, -50%);
+  transition: width .25s, height .25s;
+}
+.cursor.is-big { width: 64px; height: 64px; }
+@media (hover: none) { .cursor { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* Le card usano sia il reveal sia l'hover a colore */
+.station-card.reveal { transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1), background .35s, color .35s; }
+@media (min-width: 768px) { .info-box { min-height: 9.5rem; } }
