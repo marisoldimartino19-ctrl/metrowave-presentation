@@ -12,54 +12,105 @@
   --line: rgba(242, 239, 232, 0.14);
 }
 
-/* ---------- LAYOUT: sezioni a misura di viewport ----------
-   scroll-padding-top = altezza dell'header: ogni ancora (menu,
-   frecce, "Scendi") atterra con la sezione a filo sotto la barra.
-   Ogni sezione occupa esattamente l'area visibile restante. */
+/* ---------- LAYOUT: presentazione a slide ----------
+   Ogni .slide occupa l'intero viewport (meno l'header) ed è
+   impilata sulle altre; il controller in main.js attiva una sola
+   slide alla volta con .is-active. Il normale scroll di pagina è
+   disattivato: non può mai far "saltare" più slide per errore. */
 :root {
   --header-h: 56px;
   --gutter: 1rem;
-  --view-h: calc(100svh - var(--header-h));
-  --section-pt: clamp(1rem, 2.5vh, 1.75rem);
-  --section-pb: clamp(2rem, 4.5vh, 3.5rem);
-  --block-gap: clamp(1.5rem, 3.5vh, 3rem);
+  --section-pt: clamp(.75rem, 2vh, 1.5rem);
+  --section-pb: clamp(1rem, 3vh, 2rem);
+  --block-gap: clamp(1.25rem, 3vh, 2.5rem);
 }
 @media (min-width: 768px) { :root { --gutter: 2rem; } }
 @media (min-width: 1536px) { :root { --gutter: 3rem; } }
 
-html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); }
+html, body { height: 100%; overscroll-behavior: none; }
 
-.section {
+.deck {
   position: relative;
-  min-height: calc(100vh - var(--header-h));
-  min-height: var(--view-h);
-  padding: var(--section-pt) var(--gutter) var(--section-pb);
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(32px);
+  transition: opacity .4s ease, transform .4s cubic-bezier(.2,.8,.2,1), visibility 0s linear .4s;
 }
+.slide.is-prev-dir { transform: translateX(-32px); }
+.slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity .4s ease, transform .4s cubic-bezier(.2,.8,.2,1);
+}
+
+.slide-inner {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-gap);
+  padding: calc(var(--header-h) + var(--section-pt)) var(--gutter) var(--section-pb);
+}
+.slide-inner--center { justify-content: center; }
+
+/* Spazio con contenuto che può eccedere il viewport (tabelle, gallerie):
+   scorre internamente, senza mai cambiare slide da solo. */
+.slide-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-gap);
+  padding-right: 4px;
+}
+.slide-scroll::-webkit-scrollbar { width: 6px; }
+.slide-scroll::-webkit-scrollbar-thumb { background: var(--line); }
+
 .section-head {
   padding-bottom: .75rem;
   border-bottom: 1px solid var(--line);
-  margin-bottom: var(--block-gap);
-}
-/* Il corpo riempie lo spazio restante e distribuisce i blocchi:
-   niente vuoti morti sotto quando il contenuto è più corto del viewport. */
-.section-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--block-gap);
 }
 
-/* L'hero parte da scroll 0, sotto la barra: compensa l'header
-   e occupa l'intero schermo. */
-.section--hero {
-  min-height: 100vh;
-  min-height: 100svh;
-  padding-top: calc(var(--header-h) + 1rem);
-  padding-bottom: 1.25rem;
+/* ---------- CONTROLLI DI NAVIGAZIONE ---------- */
+.deck-nav { position: fixed; right: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vh, 2rem); z-index: 50; display: flex; gap: .6rem; }
+.deck-nav-btn {
+  width: 3rem; height: 3rem; display: grid; place-items: center;
+  background: var(--night); color: var(--paper); border: 1.5px solid rgba(242, 239, 232, .35);
+  font-size: 18px; font-family: "JetBrains Mono", monospace;
+  transition: background .2s, color .2s, border-color .2s, opacity .2s;
 }
+.deck-nav-btn:hover, .deck-nav-btn:focus-visible { background: var(--paper); color: var(--night); border-color: var(--paper); }
+.deck-nav-btn:disabled { opacity: .25; pointer-events: none; }
+
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-visible {
+  outline: 2px solid var(--spotify); outline-offset: 2px;
+}
+
+/* ---------- USER FLOW: 7 slide ---------- */
+.flow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+.flow-num { font-family: "Anton", sans-serif; text-transform: uppercase; font-size: clamp(3rem, 8vw, 6rem); line-height: .85; color: var(--spotify); }
+.flow-visual {
+  flex: 1; min-height: 0; border: 1.5px dashed rgba(242, 239, 232, .35); border-radius: 2px;
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: clamp(1.5rem, 4vw, 3rem); background: rgba(242, 239, 232, .025);
+}
+.flow-visual p { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: rgba(242, 239, 232, .45); max-width: 30ch; }
+.flow-visual.has-demo { background: none; border-style: solid; padding: clamp(1rem, 3vw, 2rem); }
 
 /* ---------- SCALA TIPOGRAFICA ----------
    Titoli massimalisti con tetto massimo: non invadono mai
@@ -111,8 +162,10 @@ body {
 /* ---------- HERO ---------- */
 /* Proporzioni monumentali originali (23vw). Il tetto in svh entra
    in gioco solo su schermi bassi, per non spingere fuori la info grid. */
+.hero-title { display: flex; flex-direction: column; gap: .1em; }
+.claim { margin-top: -.25rem; }
 .hero-word {
-  font-size: clamp(5.5rem, min(23vw, 35svh), 28rem);
+  font-size: clamp(3rem, min(15vw, 17svh), 13rem);
   line-height: 0.86;
   letter-spacing: -0.02em;
 }
@@ -145,15 +198,6 @@ body {
 .marquee--reverse .marquee__track { animation-direction: reverse; }
 .marquee:hover .marquee__track { animation-play-state: paused; }
 @keyframes marquee { to { transform: translateX(-50%); } }
-
-/* ---------- INSIGHT: "dentro le cuffie" ---------- */
-.muffled .muffle-target {
-  filter: blur(3px) grayscale(1);
-  opacity: 0.35;
-}
-.muffle-target { transition: filter 0.9s ease, opacity 0.9s ease; }
-.muffled .reveal-color { background: #2a2a2e !important; color: #6b6b70 !important; }
-.reveal-color { transition: background 0.9s ease, color 0.9s ease; }
 
 /* ---------- STAZIONI ---------- */
 .station-card {
@@ -223,12 +267,6 @@ button.chip:hover { border-color: var(--paper); }
   transition: opacity .25s, transform .25s;
 }
 .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
-
-/* ---------- USER FLOW ---------- */
-.flow-step { transition: background .25s, color .25s; }
-.flow-step:hover { background: rgba(242, 239, 232, .05); }
-.flow-step.is-active { background: var(--spotify); color: var(--night); }
-.flow-step.is-active .flow-arrow { opacity: 1; }
 
 /* ---------- AMBIENT ACTIVATION ---------- */
 /* Scatti della galleria */
@@ -304,8 +342,8 @@ input[type="range"].scrubber { -webkit-appearance: none; appearance: none; heigh
 input[type="range"].scrubber::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--red); border: 0; cursor: grab; }
 input[type="range"].scrubber::-moz-range-thumb { width: 28px; height: 28px; background: var(--red); border: 0; border-radius: 0; cursor: grab; }
 
-/* ---------- REVEAL ON SCROLL ---------- */
-.reveal { opacity: 0; transform: translateY(40px); transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
+/* ---------- REVEAL ALL'INGRESSO DELLA SLIDE ---------- */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .45s cubic-bezier(.2,.8,.2,1), transform .45s cubic-bezier(.2,.8,.2,1); }
 .reveal.is-in { opacity: 1; transform: none; }
 
 /* ---------- CURSORE ---------- */

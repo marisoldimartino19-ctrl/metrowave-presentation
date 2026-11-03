@@ -1,5 +1,8 @@
 /* =========================================================
    METROWAVE — interazioni
+   Presentazione a slide: ogni [data-section] è una schermata.
+   Navigazione: frecce tastiera, pulsanti, indice, swipe — mai
+   lo scroll di pagina (ogni slide scorre solo al proprio interno).
    ========================================================= */
 (() => {
   const STATIONS = window.METROWAVE_STATIONS;
@@ -51,12 +54,13 @@
       ? `<span class="symbol ${cls}" style="--sym:${symbolColor(s.color)}">${SYMBOLS[s.symbol]}</span>`
       : `<span class="symbol-slot ${cls}" aria-label="Spazio per il simbolo di ${s.name}"><span>Simbolo<br/>${s.num}</span></span>`;
 
-  /* ---------- HERO: titolo a onda ---------- */
+  /* ---------- COVER: titolo a onda ---------- */
   function initHero() {
     const title = $("#hero-title");
     $$("[data-split]", title).forEach((word, w) => {
+      const chars = word.textContent.trim(); // il testo reale resta nel markup: se lo script non parte, la cover è comunque completa
       const outline = word.hasAttribute("data-outline");
-      word.innerHTML = [...word.dataset.split]
+      word.innerHTML = [...chars]
         .map((ch, i) => `<span class="hero-letter${outline ? " outline" : ""}" style="--i:${i + w * 5}">${ch}</span>`)
         .join("");
     });
@@ -87,7 +91,7 @@
 
     // Mini linea con i colori delle 20 stazioni
     $("#hero-line").innerHTML = STATIONS.map(
-      (s) => `<a href="#mappa" data-goto="${s.id}" title="${s.num} ${s.name} · ${s.genre}" class="block w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full ring-2 ring-night hover:scale-150 transition-transform" style="background:${s.color}"></a>`
+      (s) => `<button type="button" data-goto="${s.id}" title="${s.num} ${s.name} · ${s.genre}" class="block w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full ring-2 ring-night hover:scale-150 transition-transform" style="background:${s.color}"></button>`
     ).join("");
 
     const clock = $("#clock");
@@ -101,38 +105,25 @@
   /* ---------- MARQUEE generi ---------- */
   function initMarquee() {
     const items = STATIONS.map(
-      (s) => `<span class="inline-flex items-center gap-5 px-5">${s.genre}<span class="inline-block w-5 h-5 md:w-7 md:h-7 border-2 border-night" style="background:${s.color}"></span></span>`
+      (s) => `<span class="inline-flex items-center gap-4 px-4">${s.genre}<span class="inline-block w-4 h-4 md:w-5 md:h-5 border-2 border-night" style="background:${s.color}"></span></span>`
     ).join("");
     $("#marquee-genres").innerHTML = `<div class="marquee__track">${items}${items}</div>`;
-  }
-
-  /* ---------- INSIGHT: togli le cuffie ---------- */
-  function initHeadphones() {
-    const section = $("#insight");
-    const btn = $("#headphones-toggle");
-    const status = $("#headphones-status");
-    btn.addEventListener("click", () => {
-      const muffled = section.classList.toggle("muffled");
-      $("[data-label]", btn).textContent = muffled ? "Togli le cuffie" : "Rimetti le cuffie";
-      status.textContent = muffled ? "● Cuffie: ON" : "○ Cuffie: OFF";
-      status.classList.toggle("text-spotify", !muffled);
-    });
   }
 
   /* ---------- 03 · STAZIONI ---------- */
   function initStationsGrid() {
     $("#stations-grid").innerHTML = STATIONS.map(
       (s) => `
-      <button type="button" class="station-card reveal text-left bg-night p-4 sm:p-5 flex flex-col gap-5 min-h-[16rem] sm:min-h-[19rem]" style="--c:${s.color};--ink:${ink(s.color)}" data-goto="${s.id}">
+      <button type="button" class="station-card reveal text-left bg-night p-4 sm:p-5 flex flex-col gap-4 min-h-[15rem] sm:min-h-[17rem]" style="--c:${s.color};--ink:${ink(s.color)}" data-goto="${s.id}">
         <div class="flex justify-between items-baseline gap-3">
           <span class="font-display text-3xl leading-none">${s.num}</span>
           <span class="t-label opacity-60">L1</span>
         </div>
-        ${symbolSlot(s, "w-14 h-14 sm:w-20 sm:h-20")}
+        ${symbolSlot(s, "w-12 h-12 sm:w-16 sm:h-16")}
         <div class="mt-auto">
-          <h3 class="font-display uppercase text-2xl sm:text-[1.7rem] leading-[0.95]">${s.name}</h3>
-          <p class="t-label mt-3 leading-relaxed">${s.genre}</p>
-          <div class="flex items-center gap-2 mt-4">
+          <h3 class="font-display uppercase text-xl sm:text-[1.5rem] leading-[0.95]">${s.name}</h3>
+          <p class="t-label mt-2 leading-relaxed">${s.genre}</p>
+          <div class="flex items-center gap-2 mt-3">
             <span class="station-swatch h-3 flex-1" style="background:${s.color}"></span>
             <span class="font-mono text-[10px] opacity-60">${s.color}${star(s.confirmed.color)}</span>
           </div>
@@ -145,7 +136,7 @@
   function initPalette() {
     $("#palette-primary").innerHTML = PRIMARY.map(
       (p) => `
-      <button type="button" data-copy="${p.hex}" class="swatch-big text-left p-6 md:p-8 min-h-[11rem] flex flex-col justify-between" style="background:${p.hex};color:${ink(p.hex)}">
+      <button type="button" data-copy="${p.hex}" class="swatch-big text-left p-6 md:p-8 min-h-[9rem] flex flex-col justify-between" style="background:${p.hex};color:${ink(p.hex)}">
         <span class="t-label">Primario</span>
         <span>
           <span class="block t-lg font-display uppercase">${p.name}</span>
@@ -156,7 +147,7 @@
 
     $("#palette-secondary").innerHTML = STATIONS.map(
       (s) => `
-      <button type="button" data-copy="${s.color}" class="swatch text-left p-3 min-h-[7.5rem] flex flex-col justify-between" style="background:${s.color};color:${ink(s.color)}" title="${s.genre} · ${s.color}">
+      <button type="button" data-copy="${s.color}" class="swatch text-left p-3 min-h-[6.5rem] flex flex-col justify-between" style="background:${s.color};color:${ink(s.color)}" title="${s.genre} · ${s.color}">
         <span class="font-display text-xl leading-none">${s.num}</span>
         <span>
           <span class="block text-[11px] font-bold leading-tight">${s.genre}</span>
@@ -169,12 +160,12 @@
     pairingGrid.innerHTML = STATIONS.map((s) => {
       const p = PAIRINGS[s.pairing];
       return `
-      <div class="pair-tile flex flex-col min-h-[11rem]" data-pairing="${s.pairing}">
-        <div class="flex-1 p-4 flex flex-col justify-between" style="background:${s.color};color:${p.hex}">
+      <div class="pair-tile flex flex-col min-h-[9rem]" data-pairing="${s.pairing}">
+        <div class="flex-1 p-3 flex flex-col justify-between" style="background:${s.color};color:${p.hex}">
           <span class="t-label">${s.num} · ${s.name}</span>
-          <span class="font-display uppercase text-2xl leading-[0.95]">${s.genre}</span>
+          <span class="font-display uppercase text-xl leading-[0.95]">${s.genre}</span>
         </div>
-        <div class="flex items-center justify-between px-4 py-2 t-label" style="background:${p.hex};color:${ink(p.hex)}">
+        <div class="flex items-center justify-between px-3 py-2 t-label" style="background:${p.hex};color:${ink(p.hex)}">
           <span>+ ${p.label}${star(s.confirmed.pairing)}</span>
           <span class="font-mono normal-case tracking-normal">${p.hex}</span>
         </div>
@@ -292,13 +283,13 @@
     panel.innerHTML = `
       <div class="panel-swap h-full flex flex-col">
         <div class="flex justify-between items-start gap-4">
-          <span class="font-display text-7xl leading-none" style="color:${s.color}">${s.num}</span>
-          ${symbolSlot(s, "w-20 h-20")}
+          <span class="font-display text-6xl leading-none" style="color:${s.color}">${s.num}</span>
+          ${symbolSlot(s, "w-16 h-16")}
         </div>
-        <h3 class="font-display uppercase text-4xl md:text-5xl leading-[0.95] mt-6">${s.name}</h3>
+        <h3 class="font-display uppercase text-3xl md:text-4xl leading-[0.95] mt-5">${s.name}</h3>
         <p class="t-label mt-3 self-start px-2 py-1" style="background:${s.color};color:${ink(s.color)}">${s.genre}</p>
 
-        <dl class="grid grid-cols-2 gap-px bg-paper/15 border border-paper/15 mt-6 text-sm">
+        <dl class="grid grid-cols-2 gap-px bg-paper/15 border border-paper/15 mt-5 text-sm">
           <div class="bg-night p-3">
             <dt class="t-label text-paper/50">Colore${star(s.confirmed.color)}</dt>
             <dd class="flex items-center gap-2 mt-2 font-mono"><span class="w-4 h-4" style="background:${s.color}"></span>${s.color}</dd>
@@ -308,10 +299,9 @@
             <dd class="flex items-center gap-2 mt-2 font-bold"><span class="w-4 h-4 border border-paper/30" style="background:${p.hex}"></span>${p.label}</dd>
           </div>
         </dl>
-        <div class="mt-4 p-4 font-display uppercase text-2xl leading-none" style="background:${s.color};color:${p.hex}">${s.genre}</div>
         <p class="t-label text-paper/40 mt-4">Scheda stazione e line-up in definizione</p>
 
-        <div class="flex gap-px mt-auto pt-6">
+        <div class="flex gap-px mt-auto pt-5">
           <button type="button" data-step="-1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night">← Prec.</button>
           <button type="button" data-step="1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night">Succ. →</button>
         </div>
@@ -361,7 +351,7 @@
     placeTrain(map.dist[map.active]);
   }
 
-  // Qualsiasi elemento con data-goto apre la stazione sulla mappa
+  // Qualsiasi elemento con data-goto apre la stazione sulla mappa (slide 04)
   function initGoto() {
     document.addEventListener("click", (e) => {
       const el = e.target.closest("[data-goto]");
@@ -369,53 +359,59 @@
       e.preventDefault();
       stopJourney();
       selectStation(STATIONS.findIndex((s) => s.id === el.dataset.goto));
-      $("#mappa").scrollIntoView({ behavior: "smooth" });
+      window.MetrowaveDeck?.goTo("mappa");
     });
   }
 
-  /* ---------- 06 · USER FLOW ---------- */
-  function initFlow() {
-    const list = $("#flow-steps");
-    list.innerHTML = FLOW.map(
-      (f, i) => `
-      <li><button type="button" data-flow="${i}" class="flow-step w-full text-left flex items-center gap-5 px-5 md:px-6 py-4 border-b border-paper/10">
-        <span class="font-display text-3xl leading-none w-10 shrink-0">${f.num}</span>
-        <span class="font-bold">${f.title}</span>
-        <span class="ml-auto t-label opacity-0 flow-arrow">→</span>
-      </button></li>`
-    ).join("");
-    $$("[data-flow]", list).forEach((b) => b.addEventListener("click", () => selectFlow(Number(b.dataset.flow))));
-    selectFlow(0);
-  }
+  /* ---------- 06 · USER FLOW — 7 slide ---------- */
+  // Placeholder per i visual non ancora progettati: area dedicata, non un
+  // mockup — in attesa dei materiali reali (ticket, quiz UI, QR, ecc.)
+  const FLOW_PLACEHOLDER = [
+    "VISUAL IN SVILUPPO — BIGLIETTO DIGITALE METRO WAVE",
+    null, // step 2: demo quiz già funzionante, nessun placeholder
+    "VISUAL IN SVILUPPO — MAPPA NELL'APP METRO WAVE",
+    "VISUAL IN SVILUPPO — SCANSIONE QR CODE",
+    "VISUAL IN SVILUPPO — PERFORMANCE A BORDO",
+    "VISUAL IN SVILUPPO — ESPERIENZA IN STAZIONE",
+    "VISUAL IN SVILUPPO — MERCHANDISING & REWARD"
+  ];
 
-  function selectFlow(i) {
-    const f = FLOW[i];
-    $$("#flow-steps .flow-step").forEach((b, k) => b.classList.toggle("is-active", k === i));
-    const panel = $("#flow-panel");
-    panel.innerHTML = `
-      <div class="panel-swap h-full flex flex-col gap-6">
-        <div class="flex items-start justify-between gap-6">
-          <span class="font-display leading-[0.8] text-[clamp(5rem,10vw,9rem)] text-spotify">${f.num}</span>
-          <span class="t-label text-paper/50">Step ${i + 1} / ${FLOW.length}</span>
-        </div>
-        <h3 class="t-lg font-display uppercase">${f.title}</h3>
-        <p class="t-lead">${f.text}</p>
-        <div class="flex flex-wrap gap-2">${f.tags.map((t) => `<span class="chip">${t}</span>`).join("")}</div>
-        ${f.demo === "quiz" ? quizMarkup() : ""}
-        ${i === 2 || i === 3 ? `<a href="#mappa" class="self-start t-label border-b border-spotify text-spotify pb-1">Apri la mappa della Linea 1 →</a>` : ""}
-        <div class="flex gap-px mt-auto pt-2">
-          <button type="button" data-flow-step="-1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night disabled:opacity-30" ${i === 0 ? "disabled" : ""}>← Step prec.</button>
-          <button type="button" data-flow-step="1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night disabled:opacity-30" ${i === FLOW.length - 1 ? "disabled" : ""}>Step succ. →</button>
-        </div>
-      </div>`;
-    $$("[data-flow-step]", panel).forEach((b) => b.addEventListener("click", () => selectFlow(i + Number(b.dataset.flowStep))));
-    if (f.demo === "quiz") initQuiz(panel);
+  function initFlowSlides() {
+    $$(".flow-slide").forEach((section) => {
+      const i = Number(section.dataset.flowSlide);
+      const f = FLOW[i];
+      section.innerHTML = `
+        <div class="slide-inner">
+          <div class="section-head grid grid-cols-12 gap-4 t-label">
+            <span class="col-span-2">06</span>
+            <span class="col-span-7">User flow — la notte di un passeggero</span>
+            <span class="col-span-3 text-right">Step ${f.num} / 07</span>
+          </div>
+          <div class="flex-1 min-h-0 flex flex-col gap-6">
+            <div class="flow-head">
+              <div>
+                <span class="flow-num">${f.num}</span>
+                <h2 class="t-lg font-display uppercase mt-1">${f.title}</h2>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end max-w-sm">${f.tags.map((t) => `<span class="chip">${t}</span>`).join("")}</div>
+            </div>
+            <p class="t-lead">${f.text}</p>
+            <div class="flow-visual${f.demo === "quiz" ? " has-demo" : ""}" id="flow-visual-${i}"></div>
+          </div>
+        </div>`;
+      if (f.demo === "quiz") {
+        $(`#flow-visual-${i}`, section).innerHTML = quizMarkup();
+        initQuiz($(`#flow-visual-${i}`, section));
+      } else if (FLOW_PLACEHOLDER[i]) {
+        $(`#flow-visual-${i}`, section).innerHTML = `<p>[ ${FLOW_PLACEHOLDER[i]} ]</p>`;
+      }
+    });
   }
 
   // Demo del quiz: la sfida è la stazione all'estremo opposto della linea
   function quizMarkup() {
     return `
-      <div class="border border-paper/15 p-5">
+      <div class="w-full">
         <p class="t-label text-paper/50 mb-3">Demo · Che genere ascolti sempre?</p>
         <div class="flex flex-wrap gap-2" id="quiz-options">
           ${STATIONS.map((s, k) => `<button type="button" class="chip" data-quiz="${k}"><span class="chip-dot" style="background:${s.color}"></span>${s.genre}</button>`).join("")}
@@ -484,26 +480,23 @@
     update();
   }
 
-  /* ---------- 08 · AMBIENT ACTIVATION: galleria + lightbox ---------- */
+  /* ---------- 08 · AMBIENT ACTIVATION: galleria editoriale + lightbox ---------- */
   const shotImg = (shot, cls, lazy) =>
     `<img src="${shot.src}" alt="${shot.title}: ${shot.caption}" class="${cls}"${lazy ? ' loading="lazy"' : ""} />`;
 
   function initActivation() {
     const SHOTS = window.METROWAVE_ACTIVATION;
-    $("#activation-gallery").insertAdjacentHTML(
-      "beforeend",
-      SHOTS.map(
-        (shot, i) => `
-        <button type="button" class="shot group relative overflow-hidden bg-night text-left ${i === 0 ? "sm:col-span-2 lg:col-span-7" : "lg:col-span-6"}" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
-          <div class="shot-media ${i === 0 ? "h-full min-h-[20rem]" : "aspect-[16/9]"}">${shotImg(shot, "w-full h-full block object-cover", true)}</div>
-          <div class="shot-meta absolute inset-x-0 bottom-0 p-4 md:p-5">
-            <p class="t-label text-paper/70">${shot.place}</p>
-            <p class="font-display uppercase text-2xl md:text-3xl leading-none mt-2">${shot.title}</p>
-          </div>
-          <span class="shot-open t-label" aria-hidden="true">⤢</span>
-        </button>`
-      ).join("")
-    );
+    $("#activation-gallery").innerHTML = SHOTS.map(
+      (shot, i) => `
+      <button type="button" class="shot group relative overflow-hidden bg-night text-left" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
+        <div class="shot-media aspect-[4/5] md:aspect-[3/4]">${shotImg(shot, "w-full h-full block object-cover", true)}</div>
+        <div class="shot-meta absolute inset-x-0 bottom-0 p-4 md:p-5">
+          <p class="t-label text-paper/70">${shot.place}</p>
+          <p class="font-display uppercase text-2xl leading-none mt-2">${shot.title}</p>
+        </div>
+        <span class="shot-open t-label" aria-hidden="true">⤢</span>
+      </button>`
+    ).join("");
 
     const box = $("#lightbox");
     let current = 0;
@@ -558,66 +551,96 @@
     });
   }
 
-  /* ---------- NAVIGAZIONE / PRESENTAZIONE ---------- */
-  function initNavigation() {
-    const sections = $$("[data-section]");
-    const links = $$("[data-nav]");
-    const navList = $("#nav-links");
-    const bar = $("#progress");
+  /* ---------- DECK: motore di navigazione a slide ---------- */
+  function initDeck() {
+    const slides = $$("[data-section]");
+    const total = slides.length;
+    const counter = $("#slide-counter");
+    const progress = $("#progress");
+    const navLinks = $$("[data-nav]");
+    const prevBtn = $("#nav-prev");
+    const nextBtn = $("#nav-next");
+    let current = 0;
+    let animating = false;
 
-    window.addEventListener("scroll", () => {
-      const max = document.documentElement.scrollHeight - innerHeight;
-      bar.style.width = `${(scrollY / max) * 100}%`;
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function revealIn(slide) {
+      $$(".reveal", slide).forEach((el) => el.classList.add("is-in"));
+    }
+
+    function goTo(target, { silent } = {}) {
+      const idx = typeof target === "number" ? target : slides.findIndex((s) => s.id === target);
+      if (idx < 0 || idx === current || idx >= total) return;
+      const dir = idx > current ? 1 : -1;
+      const prevSlide = slides[current];
+      const nextSlide = slides[idx];
+
+      prevSlide.classList.remove("is-active");
+      prevSlide.classList.toggle("is-prev-dir", dir > 0);
+      nextSlide.classList.remove("is-prev-dir");
+      // force reflow così il browser applica lo stato "entrante" prima di animare
+      void nextSlide.offsetWidth;
+      nextSlide.classList.add("is-active");
+      revealIn(nextSlide);
+
+      current = idx;
+      updateChrome();
+      if (!silent) nextSlide.querySelector("h1, h2")?.setAttribute("tabindex", "-1");
+    }
+
+    function updateChrome() {
+      counter.textContent = `${pad(current + 1)} / ${pad(total)}`;
+      progress.style.width = `${((current + 1) / total) * 100}%`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === total - 1;
+      const activeId = slides[current].id;
+      const group = activeId.startsWith("flow-") ? "flow-1" : activeId === "activation" ? "promo" : activeId;
+      navLinks.forEach((l) => l.classList.toggle("text-wred", l.dataset.gotoSlide === group));
+    }
+
+    prevBtn.addEventListener("click", () => goTo(current - 1));
+    nextBtn.addEventListener("click", () => goTo(current + 1));
+
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-goto-slide]");
+      if (!el) return;
+      e.preventDefault();
+      goTo(el.dataset.gotoSlide);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.target.closest("input, textarea")) return;
+      if (document.body.classList.contains("lightbox-open")) return;
+      if (["ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
+      else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); goTo(current - 1); }
+      else if (e.key === "Home") { e.preventDefault(); goTo(0); }
+      else if (e.key === "End") { e.preventDefault(); goTo(total - 1); }
+    });
+
+    // Swipe touch (mobile): orizzontale, soglia 48px, ignora gesti verticali
+    // (così lo scroll interno di una slide lunga resta libero).
+    let touchStartX = 0, touchStartY = 0;
+    document.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    document.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0) goTo(current + 1); else goTo(current - 1);
     }, { passive: true });
 
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => {
-        if (!en.isIntersecting) return;
-        links.forEach((l) => {
-          const on = l.getAttribute("href") === `#${en.target.id}`;
-          l.classList.toggle("text-wred", on);
-          // Su mobile il menu scorre: porta in vista la voce attiva (solo il menu, non la pagina)
-          if (on) navList.scrollTo({ left: l.offsetLeft - navList.clientWidth / 2 + l.offsetWidth / 2, behavior: "smooth" });
-        });
-      });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-    sections.forEach((s) => io.observe(s));
+    // Riapri su un hash diretto (#concept…) alla prima apertura
+    const startId = location.hash?.slice(1);
+    const startIdx = startId ? slides.findIndex((s) => s.id === startId) : 0;
+    slides.forEach((s, i) => s.classList.toggle("is-active", i === (startIdx >= 0 ? startIdx : 0)));
+    current = startIdx >= 0 ? startIdx : 0;
+    revealIn(slides[current]);
+    updateChrome();
 
-    // Apertura diretta con ancora (#concept…): il salto nativo avviene prima
-    // che font, Tailwind e contenuti generati fissino il layout. Riallinea.
-    window.addEventListener("load", () => {
-      const target = location.hash && document.querySelector(location.hash);
-      if (!target) return;
-      document.fonts.ready.then(() =>
-        requestAnimationFrame(() => target.scrollIntoView({ behavior: "instant", block: "start" }))
-      );
-    });
-
-    // Frecce / PagSu-PagGiù: salta da una sezione all'altra come in una slide
-    document.addEventListener("keydown", (e) => {
-      if (e.target.closest("input, textarea, [role='button']")) return;
-      if (document.body.classList.contains("lightbox-open")) return;
-      const next = ["ArrowRight", "PageDown"].includes(e.key);
-      const prev = ["ArrowLeft", "PageUp"].includes(e.key);
-      if (!next && !prev) return;
-      e.preventDefault();
-      // Le sezioni atterrano sotto l'header (scroll-padding-top in CSS)
-      const offset = $("header").offsetHeight;
-      const tops = sections.map((s) => Math.round(s.getBoundingClientRect().top));
-      const current = Math.max(0, tops.findLastIndex((t) => t <= offset + 2));
-      let idx = current + (next ? 1 : -1);
-      // A metà di una sezione lunga, "indietro" riporta prima al suo inizio
-      if (prev && tops[current] < offset - 2) idx = current;
-      sections[Math.max(0, Math.min(sections.length - 1, idx))].scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }
-
-  /* ---------- REVEAL & CURSORE ---------- */
-  function initReveal() {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } });
-    }, { threshold: 0.15 });
-    $$(".reveal").forEach((el) => io.observe(el));
+    window.MetrowaveDeck = { goTo, get current() { return current; } };
   }
 
   function initCursor() {
@@ -631,15 +654,13 @@
 
   initHero();
   initMarquee();
-  initHeadphones();
   initStationsGrid();
   initPalette();
   initMap();
   initGoto();
-  initFlow();
+  initFlowSlides();
   initTimetable();
   initActivation();
-  initNavigation();
-  initReveal();
+  initDeck();
   initCursor();
 })();
