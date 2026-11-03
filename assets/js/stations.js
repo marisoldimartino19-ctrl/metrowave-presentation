@@ -126,3 +126,16 @@ window.METROWAVE_HEADWAY = [
   { from: 120, to: 240, every: 8, note: "Regime di crociera" },
   { from: 240, to: 300, every: 10, note: "Deflusso graduale verso i capolinea" }
 ];
+
+/* Ambient activation — galleria della "bolla di silenzio" (foto in assets/activation/) */
+window.METROWAVE_ACTIVATION = [
+  { title: "Piscinola", place: "01 · Hip Hop / Rap",
+    caption: "All'uscita del capolinea, il box rosso ospita un live hip hop: chi passa vede il rapper, ma lo sente solo collegando le cuffie alla postazione.",
+    src: "assets/activation/01-piscinola.jpg" },
+  { title: "Vanvitelli", place: "09 · Jazz",
+    caption: "In piazza Vanvitelli un trio jazz suona dentro la vetrina fonoassorbente. Fuori, il pubblico si ferma e ascolta in cuffia.",
+    src: "assets/activation/02-vanvitelli.jpg" },
+  { title: "Toledo", place: "15 · Musica Napoletana / Neomelodico",
+    caption: "Davanti alla stazione Toledo, chitarra e voce napoletana nel box blu: la musica arriva solo a chi si collega.",
+    src: "assets/activation/03-toledo.jpg" }
+];

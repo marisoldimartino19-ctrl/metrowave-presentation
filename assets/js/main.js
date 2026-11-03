@@ -484,18 +484,77 @@
     update();
   }
 
-  /* ---------- 08 · AMBIENT ACTIVATION: bolla di silenzio ---------- */
-  function initSilence() {
-    const box = $("#silence-box");
-    $("#silence-bars").innerHTML = Array.from({ length: 28 }, (_, i) => `<span class="eq-bar" style="--d:${(i * 0.137) % 1}s;--h:${30 + ((i * 37) % 70)}%"></span>`).join("");
-    const btn = $("#silence-toggle");
-    btn.addEventListener("click", () => {
-      const silent = box.classList.toggle("is-silent");
-      $("[data-label]", btn).textContent = silent ? "Collega le cuffie" : "Scollega le cuffie";
-      const status = $("#silence-status");
-      status.textContent = silent ? "● Silenzio" : "● In ascolto";
-      status.classList.toggle("text-spotify", !silent);
-      status.classList.toggle("text-paper/50", silent);
+  /* ---------- 08 · AMBIENT ACTIVATION: galleria + lightbox ---------- */
+  const shotImg = (shot, cls, lazy) =>
+    `<img src="${shot.src}" alt="${shot.title}: ${shot.caption}" class="${cls}"${lazy ? ' loading="lazy"' : ""} />`;
+
+  function initActivation() {
+    const SHOTS = window.METROWAVE_ACTIVATION;
+    $("#activation-gallery").insertAdjacentHTML(
+      "beforeend",
+      SHOTS.map(
+        (shot, i) => `
+        <button type="button" class="shot group relative overflow-hidden bg-night text-left ${i === 0 ? "sm:col-span-2 lg:col-span-7" : "lg:col-span-6"}" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
+          <div class="shot-media ${i === 0 ? "h-full min-h-[20rem]" : "aspect-[16/9]"}">${shotImg(shot, "w-full h-full block object-cover", true)}</div>
+          <div class="shot-meta absolute inset-x-0 bottom-0 p-4 md:p-5">
+            <p class="t-label text-paper/70">${shot.place}</p>
+            <p class="font-display uppercase text-2xl md:text-3xl leading-none mt-2">${shot.title}</p>
+          </div>
+          <span class="shot-open t-label" aria-hidden="true">⤢</span>
+        </button>`
+      ).join("")
+    );
+
+    const box = $("#lightbox");
+    let current = 0;
+    let lastFocus = null;
+    const show = (i) => {
+      current = (i + SHOTS.length) % SHOTS.length;
+      const shot = SHOTS[current];
+      $("#lightbox-media").innerHTML = shotImg(shot, "block object-contain");
+      $("#lightbox-count").textContent = `${pad(current + 1)} / ${pad(SHOTS.length)}`;
+      $("#lightbox-place").textContent = shot.place;
+      $("#lightbox-title").textContent = shot.title;
+      $("#lightbox-text").textContent = shot.caption;
+    };
+    const open = (i) => {
+      lastFocus = document.activeElement;
+      show(i);
+      box.hidden = false;
+      document.body.classList.add("lightbox-open");
+      void box.offsetWidth; // applica display prima della dissolvenza
+      box.classList.add("is-open");
+      $("[data-close]", box).focus();
+    };
+    const close = () => {
+      box.classList.remove("is-open");
+      document.body.classList.remove("lightbox-open");
+      setTimeout(() => (box.hidden = true), 250);
+      lastFocus?.focus();
+    };
+
+    $("#activation-gallery").addEventListener("click", (e) => {
+      const tile = e.target.closest("[data-shot]");
+      if (tile) open(Number(tile.dataset.shot));
+    });
+    // Un click ovunque chiude, tranne sulle frecce
+    box.addEventListener("click", (e) => {
+      const nav = e.target.closest("[data-step]");
+      if (nav) show(current + Number(nav.dataset.step));
+      else close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (box.hidden) return;
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowRight") show(current + 1);
+      else if (e.key === "ArrowLeft") show(current - 1);
+      else if (e.key === "Tab") {
+        // focus intrappolato nel lightbox
+        const items = $$("button", box);
+        const k = items.indexOf(document.activeElement);
+        e.preventDefault();
+        items[(k + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
+      }
     });
   }
 
@@ -537,6 +596,7 @@
     // Frecce / PagSu-PagGiù: salta da una sezione all'altra come in una slide
     document.addEventListener("keydown", (e) => {
       if (e.target.closest("input, textarea, [role='button']")) return;
+      if (document.body.classList.contains("lightbox-open")) return;
       const next = ["ArrowRight", "PageDown"].includes(e.key);
       const prev = ["ArrowLeft", "PageUp"].includes(e.key);
       if (!next && !prev) return;
@@ -578,7 +638,7 @@
   initGoto();
   initFlow();
   initTimetable();
-  initSilence();
+  initActivation();
   initNavigation();
   initReveal();
   initCursor();

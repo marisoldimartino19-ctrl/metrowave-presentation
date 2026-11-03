@@ -438,23 +438,14 @@
         <!-- Ambient activation -->
         <div>
           <h3 class="t-label text-paper/50 mb-4">B · Ambient activation — la bolla di silenzio</h3>
-          <div class="grid lg:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
-            <div class="lg:col-span-5 bg-wred text-night p-6 md:p-10 flex flex-col gap-6">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-12 gap-px bg-paper/15 border border-paper/15" id="activation-gallery">
+            <div class="sm:col-span-2 lg:col-span-5 bg-wred text-night p-6 md:p-10 flex flex-col gap-6">
               <p class="t-lg font-display uppercase">Suonano.<br/>Nessuno sente.</p>
               <p class="t-body">Nei giorni precedenti l'evento, grandi box e vetrine fonoassorbenti ospitano artisti che suonano in una "bolla di silenzio".</p>
               <p class="t-body">I brani sono udibili all'esterno solo collegando le proprie cuffie alle postazioni dedicate: l'invito a uscire dalle cuffie parte, paradossalmente, proprio dalle cuffie.</p>
+              <p class="t-label mt-auto">↗ Clicca uno scatto per aprirlo a tutto schermo</p>
             </div>
-            <div class="lg:col-span-7 bg-night p-6 md:p-10 flex flex-col gap-8 is-silent" id="silence-box">
-              <div class="flex justify-between t-label">
-                <span>Vetrina fonoassorbente · Live</span>
-                <span id="silence-status" class="text-paper/50">● Silenzio</span>
-              </div>
-              <div class="silence-glass flex-1 min-h-[14rem] flex items-end justify-center gap-1.5 p-6" aria-hidden="true" id="silence-bars"></div>
-              <button type="button" id="silence-toggle" class="self-start inline-flex items-center gap-4 border-2 border-paper px-6 py-4 t-label hover:bg-paper hover:text-night transition-colors">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><rect x="2" y="15" width="5" height="7"/><rect x="17" y="15" width="5" height="7"/></svg>
-                <span data-label>Collega le cuffie</span>
-              </button>
-            </div>
+            <!-- scatti generati da main.js (METROWAVE_ACTIVATION in stations.js) -->
           </div>
         </div>
       </div>
@@ -471,6 +462,24 @@
       <span class="md:text-right">© 2026</span>
     </div>
   </footer>
+
+  <!-- LIGHTBOX · galleria ambient activation -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" hidden>
+    <div class="lightbox-bar t-label">
+      <span id="lightbox-count"></span>
+      <button type="button" class="lightbox-close" data-close aria-label="Chiudi">Chiudi ✕ <span class="text-paper/50">Esc</span></button>
+    </div>
+    <figure class="lightbox-stage">
+      <div class="lightbox-media" id="lightbox-media"></div>
+      <figcaption class="lightbox-caption">
+        <p class="t-label text-wred" id="lightbox-place"></p>
+        <p class="t-md font-display uppercase mt-2" id="lightbox-title"></p>
+        <p class="t-body text-paper/70 mt-3 max-w-xl" id="lightbox-text"></p>
+      </figcaption>
+    </figure>
+    <button type="button" class="lightbox-nav lightbox-prev t-label" data-step="-1" aria-label="Scatto precedente">←</button>
+    <button type="button" class="lightbox-nav lightbox-next t-label" data-step="1" aria-label="Scatto successivo">→</button>
+  </div>
 
   <script src="assets/js/stations.js"></script>
   <script src="assets/js/symbols.js"></script>
