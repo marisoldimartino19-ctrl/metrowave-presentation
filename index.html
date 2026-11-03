@@ -35,433 +35,244 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 
-<body class="grain font-sans overflow-x-hidden">
+<body class="grain font-sans">
   <div class="cursor" aria-hidden="true"></div>
-  <div class="toast t-label" id="toast" role="status" aria-live="polite"></div>
 
-  <!-- NAV: barra solida, altezza fissa = --header-h -->
-  <header class="fixed top-0 inset-x-0 z-40 h-14 bg-night/85 backdrop-blur-md border-b border-paper/10">
-    <nav class="h-full flex items-center gap-6 px-4 md:px-8 t-label">
-      <a href="#hero" class="font-bold shrink-0">MW/L1</a>
-      <ul class="flex gap-5 lg:gap-7 overflow-x-auto whitespace-nowrap min-w-0 md:mx-auto" id="nav-links">
-        <li><a href="#insight" data-nav class="py-2 block hover:text-wred transition-colors">01 Insight</a></li>
-        <li><a href="#concept" data-nav class="py-2 block hover:text-wred transition-colors">02 Concept</a></li>
-        <li><a href="#stazioni" data-nav class="py-2 block hover:text-wred transition-colors">03 Stazioni</a></li>
-        <li><a href="#palette" data-nav class="py-2 block hover:text-wred transition-colors">04 Palette</a></li>
-        <li><a href="#mappa" data-nav class="py-2 block hover:text-wred transition-colors">05 Mappa</a></li>
-        <li><a href="#flow" data-nav class="py-2 block hover:text-wred transition-colors">06 User flow</a></li>
-        <li><a href="#timetable" data-nav class="py-2 block hover:text-wred transition-colors">07 Timetable</a></li>
-        <li><a href="#promo" data-nav class="py-2 block hover:text-wred transition-colors">08 Promo</a></li>
-      </ul>
-      <span class="hidden xl:inline shrink-0 text-paper/50">← → naviga</span>
-    </nav>
-    <div class="absolute left-0 bottom-0 h-0.5 bg-wred w-0" id="progress"></div>
+  <!-- HEADER FISSO: logo Metrowave + partner -->
+  <header class="deck-header">
+    <button type="button" class="brand" data-go="0" aria-label="Metrowave, torna alla cover">
+      <svg class="brand-mark" viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true">
+        <path d="M2 12c3-8 6-8 9 0s6 8 9 0 6-8 9 0 6 8 9 0"/>
+      </svg>
+      <span class="brand-word">Metrowave</span>
+    </button>
+    <p class="partners t-label">
+      <span class="text-spotify">Spotify</span>
+      <span class="x">×</span>
+      <span>ANM Campania</span>
+      <span class="x">×</span>
+      <span>Comune di Napoli</span>
+    </p>
   </header>
 
-  <main>
-    <!-- =====================================================
-         00 · HERO
-         ===================================================== -->
-    <section id="hero" data-section class="section section--hero bg-night overflow-hidden">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 border-y border-paper/15 py-3 t-label">
-        <span>Spotify</span>
-        <span>× ANM Campania</span>
-        <span>× Comune di Napoli</span>
-        <span class="md:text-right"><span class="text-wred">●</span> Live <span id="clock">00:00</span> NA</span>
-      </div>
+  <!-- DECK -->
+  <main class="deck" id="deck" aria-roledescription="presentazione">
+    <div class="deck-track" id="deck-track">
 
-      <h1 class="flex-1 flex flex-col justify-center font-display uppercase select-none py-6 hero-idle" id="hero-title" aria-label="Metrowave">
-        <span class="hero-word block" aria-hidden="true" data-split="METRO"></span>
-        <span class="hero-word block text-right" aria-hidden="true" data-split="WAVE" data-outline></span>
-      </h1>
+      <!-- =====================================================
+           01 · COVER
+           ===================================================== -->
+      <section class="slide bg-night" id="cover" data-title="Cover" aria-roledescription="slide" aria-label="01 Cover">
+        <div class="slide-inner">
+          <p class="kicker" data-anim>Linea 1 Night Festival · Napoli</p>
 
-      <div class="grid grid-cols-2 md:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
-        <div class="bg-night p-5 col-span-2 md:col-span-5">
-          <p class="t-label text-paper/50 mb-3">Il manifesto</p>
-          <p class="text-lg md:text-xl lg:text-2xl font-bold leading-snug">La Linea 1 chiude al pubblico. E apre il primo festival che si vive <span class="bg-wred text-night px-1">in movimento</span>.</p>
-        </div>
-        <div class="bg-night p-5 md:col-span-2">
-          <p class="t-label text-paper/50 mb-3">Stazioni</p>
-          <p class="font-display text-5xl leading-none">20</p>
-        </div>
-        <div class="bg-night p-5 md:col-span-2">
-          <p class="t-label text-paper/50 mb-3">Generi</p>
-          <p class="font-display text-5xl leading-none">20</p>
-        </div>
-        <div class="bg-wred text-night p-5 col-span-2 md:col-span-3">
-          <p class="t-label mb-3">Orario</p>
-          <p class="font-display text-4xl lg:text-5xl leading-none">00:00—05:00</p>
-        </div>
-      </div>
+          <h1 class="flex-1 flex flex-col justify-center font-display uppercase select-none hero-idle" id="hero-title" aria-label="Metrowave">
+            <span class="hero-word block" aria-hidden="true" data-split="METRO"></span>
+            <span class="hero-word block text-right" aria-hidden="true" data-split="WAVE" data-outline></span>
+          </h1>
 
-      <div class="mt-5 flex items-center gap-4">
-        <span class="t-label shrink-0">L1</span>
-        <div class="relative flex-1 h-px bg-paper/30">
-          <div class="absolute inset-0 flex justify-between items-center" id="hero-line"></div>
-        </div>
-        <a href="#insight" class="t-label shrink-0 hover:text-wred">Scendi ↓</a>
-      </div>
-    </section>
-
-    <!-- Marquee generi -->
-    <div class="marquee bg-wred text-night font-display uppercase text-3xl md:text-5xl py-3 border-y-2 border-night" id="marquee-genres"></div>
-
-    <!-- =====================================================
-         01 · INSIGHT
-         ===================================================== -->
-    <section id="insight" data-section class="section muffled bg-night">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">01</span>
-        <span class="col-span-6">L'insight & il problema</span>
-        <span class="col-span-4 text-right" id="headphones-status">● Cuffie: ON</span>
-      </div>
-
-      <div class="section-body">
-        <h2 class="t-mega font-display uppercase">
-          Stessa playlist.<br/>
-          <span class="muffle-target inline-block">Stesso</span> <span class="muffle-target inline-block text-wred">genere.</span><br/>
-          <span class="muffle-target inline-block">Stesso</span> <span class="muffle-target inline-block">tragitto.</span>
-        </h2>
-
-        <div class="grid md:grid-cols-12 gap-6 md:gap-12 items-end">
-          <p class="t-lead md:col-span-6 lg:col-span-5">Quando ci spostiamo in metropolitana ci rifugiamo sempre nelle stesse playlist e nello stesso genere. Le cuffie diventano una bolla: ci isolano dalla città e da chi ci siede accanto.</p>
-          <div class="md:col-span-6 lg:col-span-5 lg:col-start-8 flex flex-col gap-6">
-            <p class="t-body text-paper/65 muffle-target">Uscire dalla propria comfort zone sonora è un'abitudine rara. Il tragitto è tempo "morto", da riempire con ciò che conosciamo già.</p>
-            <button id="headphones-toggle" class="self-start inline-flex items-center gap-4 border-2 border-paper px-6 py-4 t-label hover:bg-paper hover:text-night transition-colors">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><rect x="2" y="15" width="5" height="7"/><rect x="17" y="15" width="5" height="7"/></svg>
-              <span data-label>Togli le cuffie</span>
-            </button>
+          <div class="grid md:grid-cols-12 gap-8 items-end" data-anim style="--d:2">
+            <p class="t-lead md:col-span-6 lg:col-span-5">La Linea 1 chiude al pubblico. E apre il primo festival che si vive <span class="text-wred">in movimento</span>.</p>
+            <dl class="md:col-span-6 lg:col-start-8 lg:col-span-5 grid grid-cols-3 gap-6">
+              <div><dt class="t-label text-paper/50">Stazioni</dt><dd class="stat">20</dd></div>
+              <div><dt class="t-label text-paper/50">Generi</dt><dd class="stat">20</dd></div>
+              <div><dt class="t-label text-paper/50">Notte</dt><dd class="stat">00—05</dd></div>
+            </dl>
           </div>
-        </div>
 
-        <div class="grid sm:grid-cols-3 gap-px bg-paper/15 border border-paper/15">
-          <div class="info-box bg-night muffle-target">
-            <p class="t-label text-paper/50">A · Comportamento</p>
-            <div>
-              <p class="t-lg font-display uppercase">Loop</p>
-              <p class="t-body text-paper/65 mt-2">Gli stessi brani, ascolto dopo ascolto.</p>
+          <div class="flex items-center gap-4 mt-8" data-anim style="--d:3">
+            <span class="t-label shrink-0 text-paper/50">L1</span>
+            <div class="relative flex-1 h-px bg-paper/25">
+              <div class="absolute inset-0 flex justify-between items-center" id="hero-line"></div>
             </div>
+            <button type="button" class="t-label shrink-0 hover:text-wred transition-colors" data-go="1">Inizia →</button>
           </div>
-          <div class="info-box bg-night muffle-target">
-            <p class="t-label text-paper/50">B · Spazio</p>
-            <div>
-              <p class="t-lg font-display uppercase">Bolla</p>
-              <p class="t-body text-paper/65 mt-2">La metro è un non-luogo da attraversare, non da vivere.</p>
-            </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           02 · INSIGHT & PROBLEMA
+           ===================================================== -->
+      <section class="slide bg-abyss muffled" id="insight" data-title="Insight" aria-roledescription="slide" aria-label="02 Insight">
+        <div class="slide-inner">
+          <div class="flex justify-between gap-6" data-anim>
+            <p class="kicker">02 · L'insight & il problema</p>
+            <p class="kicker" id="headphones-status">● Cuffie: ON</p>
           </div>
-          <div class="info-box reveal-color bg-wred text-night">
-            <p class="t-label">C · Opportunità</p>
-            <div>
-              <p class="t-lg font-display uppercase">Scoperta</p>
-              <p class="t-body mt-2">Trasformare il tragitto in esplorazione sonora.</p>
+
+          <h2 class="t-mega font-display uppercase my-auto py-8" data-anim style="--d:1">
+            Stessa playlist.<br/>
+            <span class="muffle-target inline-block">Stesso</span> <span class="muffle-target inline-block text-wred">genere.</span><br/>
+            <span class="muffle-target inline-block">Stesso</span> <span class="muffle-target inline-block">tragitto.</span>
+          </h2>
+
+          <div class="grid md:grid-cols-12 gap-8 items-end" data-anim style="--d:2">
+            <p class="t-lead md:col-span-6 lg:col-span-5">In metro ci rifugiamo sempre nelle stesse playlist. Le cuffie diventano una bolla che ci isola dalla città.</p>
+            <div class="md:col-span-6 lg:col-start-8 lg:col-span-5 flex flex-col gap-6">
+              <ul class="grid grid-cols-3 gap-6 border-t border-paper/20 pt-4">
+                <li class="muffle-target"><p class="t-label text-paper/50">A</p><p class="font-display uppercase text-3xl mt-2">Loop</p></li>
+                <li class="muffle-target"><p class="t-label text-paper/50">B</p><p class="font-display uppercase text-3xl mt-2">Bolla</p></li>
+                <li class="reveal-color"><p class="t-label text-paper/50">C</p><p class="font-display uppercase text-3xl mt-2 text-wred">Scoperta</p></li>
+              </ul>
+              <button id="headphones-toggle" type="button" class="btn self-start">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><rect x="2" y="15" width="5" height="7"/><rect x="17" y="15" width="5" height="7"/></svg>
+                <span data-label>Togli le cuffie</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         02 · CONCEPT & IDEA
-         ===================================================== -->
-    <section id="concept" data-section class="section bg-abyss">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">02</span>
-        <span class="col-span-10">Il concept & l'idea</span>
-      </div>
+      <!-- =====================================================
+           03 · CONCEPT & IDEA
+           ===================================================== -->
+      <section class="slide bg-night" id="concept" data-title="Concept" aria-roledescription="slide" aria-label="03 Concept">
+        <div class="slide-inner">
+          <p class="kicker" data-anim>03 · Il concept & l'idea</p>
 
-      <div class="section-body">
-        <h2 class="reveal t-mega font-display uppercase">
-          E se la metro<br/>non fosse il mezzo<br/>ma <span class="inline-block bg-wred text-abyss px-[0.12em] pt-[0.06em] leading-[0.9] mt-[0.08em]">l&apos;evento?</span>
-        </h2>
+          <h2 class="t-mega font-display uppercase my-auto py-8" data-anim style="--d:1">
+            E se la metro<br/>non fosse il mezzo<br/>ma <span class="text-wred">l&apos;evento?</span>
+          </h2>
 
-        <div class="grid md:grid-cols-12 gap-6 md:gap-12 items-end">
-          <p class="reveal t-lead md:col-span-6 lg:col-span-5">Un'esperienza che porta tutti <strong>fuori dalle cuffie</strong>. Nessun palco centrale: la Linea 1 diventa un club sotterraneo itinerante.</p>
-          <p class="reveal t-body text-paper/65 md:col-span-6 lg:col-span-5 lg:col-start-8">Venti fermate, venti generi. Il pubblico non raggiunge il festival: lo attraversa, salendo e scendendo dai treni da Piscinola a Centro Direzionale.</p>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-px bg-paper/15 border border-paper/15">
-          <article class="reveal info-box bg-abyss">
-            <span class="t-label text-neon">A</span>
-            <div>
-              <h3 class="t-md font-display uppercase">Nessun palco</h3>
-              <p class="t-body text-paper/70 mt-2">Il festival è diffuso in 20 stazioni: il centro è ovunque.</p>
-            </div>
-          </article>
-          <article class="reveal info-box bg-abyss">
-            <span class="t-label text-neon">B</span>
-            <div>
-              <h3 class="t-md font-display uppercase">1 fermata = 1 genere</h3>
-              <p class="t-body text-paper/70 mt-2">Ogni stazione ha un genere, un colore e un simbolo propri.</p>
-            </div>
-          </article>
-          <article class="reveal info-box bg-neon text-abyss">
-            <span class="t-label">C</span>
-            <div>
-              <h3 class="t-md font-display uppercase">Il viaggio è la scoperta</h3>
-              <p class="t-body mt-2">Si scende dove la musica incuriosisce. Si risale per cambiare atmosfera.</p>
-            </div>
-          </article>
-        </div>
-
-        <div class="reveal overflow-x-auto">
-          <table class="w-full min-w-[560px] text-left border-collapse">
-            <thead class="t-label text-paper/50">
-              <tr class="border-b-2 border-paper">
-                <th class="py-3 pr-6 w-1/4 font-normal">Parametro</th>
-                <th class="py-3 pr-6 font-normal">Festival tradizionale</th>
-                <th class="py-3 text-spotify font-normal">Metrowave</th>
-              </tr>
-            </thead>
-            <tbody class="text-base md:text-lg">
-              <tr class="border-b border-paper/15"><td class="py-3.5 pr-6 t-label">Palco</td><td class="py-3.5 pr-6 text-paper/50">Unico, centrale</td><td class="py-3.5 font-bold">Diffuso in 20 stazioni + vagoni</td></tr>
-              <tr class="border-b border-paper/15"><td class="py-3.5 pr-6 t-label">Pubblico</td><td class="py-3.5 pr-6 text-paper/50">Statico</td><td class="py-3.5 font-bold">In movimento</td></tr>
-              <tr class="border-b border-paper/15"><td class="py-3.5 pr-6 t-label">Scoperta</td><td class="py-3.5 pr-6 text-paper/50">Line-up scelta a priori</td><td class="py-3.5 font-bold">Per fermata, anche per caso</td></tr>
-              <tr class="border-b border-paper/15"><td class="py-3.5 pr-6 t-label">Spazio</td><td class="py-3.5 pr-6 text-paper/50">Area recintata</td><td class="py-3.5 font-bold">Infrastruttura urbana</td></tr>
-              <tr class="border-b border-paper/15"><td class="py-3.5 pr-6 t-label">Orario</td><td class="py-3.5 pr-6 text-paper/50">Serale</td><td class="py-3.5 font-bold">Notturno, dopo la chiusura</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         03 · LE 20 STAZIONI
-         ===================================================== -->
-    <section id="stazioni" data-section class="section bg-night">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">03</span>
-        <span class="col-span-6">Le stazioni e i generi</span>
-        <span class="col-span-4 text-right">Clicca per la mappa</span>
-      </div>
-
-      <div class="section-body">
-        <div class="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
-          <h2 class="reveal t-xl font-display uppercase lg:col-span-7">20 stazioni<br/>20 generi</h2>
-          <p class="reveal t-body text-paper/70 lg:col-span-5">Da Piscinola a Centro Direzionale, ogni fermata della Linea 1 ospita un genere musicale con un colore e un simbolo grafico dedicati.</p>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-px bg-paper/15 border border-paper/15" id="stations-grid"></div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         04 · SISTEMA CROMATICO
-         ===================================================== -->
-    <section id="palette" data-section class="section bg-abyss">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">04</span>
-        <span class="col-span-6">Sistema cromatico & palette</span>
-        <span class="col-span-4 text-right">Clicca un colore per copiarlo</span>
-      </div>
-
-      <div class="section-body">
-        <div class="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
-          <h2 class="reveal t-xl font-display uppercase lg:col-span-7">Tre colori<br/>per tutti.<br/>Uno per genere.</h2>
-          <p class="reveal t-body text-paper/70 lg:col-span-5">La palette primaria firma l'evento e lo lega all'universo Spotify. La palette secondaria dà un'identità a ogni genere. L'abbinamento finale combina le due per la comunicazione di ogni stazione.</p>
-        </div>
-
-        <!-- A · Primaria -->
-        <div>
-          <h3 class="t-label text-paper/50 mb-4">A · Palette primaria — Spotify, bianco & nero</h3>
-          <div class="grid sm:grid-cols-3 gap-px bg-paper/15 border border-paper/15" id="palette-primary"></div>
-        </div>
-
-        <!-- B · Secondaria -->
-        <div>
-          <div class="flex flex-wrap justify-between gap-2 mb-4">
-            <h3 class="t-label text-paper/50">B · Palette secondaria — 20 generi</h3>
-            <p class="t-label text-paper/40">* colore provvisorio, da validare</p>
+          <div class="grid md:grid-cols-12 gap-8 items-end">
+            <p class="t-lead md:col-span-5" data-anim style="--d:2">La Linea 1 diventa un festival notturno itinerante. Il pubblico non raggiunge il palco: <strong>lo attraversa</strong>.</p>
+            <ol class="md:col-span-7 grid sm:grid-cols-3 gap-6 sm:gap-8" data-anim style="--d:3">
+              <li class="border-t border-paper/20 pt-4"><p class="t-label text-neon">A</p><h3 class="font-display uppercase text-2xl mt-3">Nessun palco</h3><p class="text-sm text-paper/60 mt-2">Il festival è diffuso: il centro è ovunque.</p></li>
+              <li class="border-t border-paper/20 pt-4"><p class="t-label text-neon">B</p><h3 class="font-display uppercase text-2xl mt-3">1 fermata,<br/>1 genere</h3><p class="text-sm text-paper/60 mt-2">Ogni stazione ha suono, colore e simbolo.</p></li>
+              <li class="border-t border-neon pt-4"><p class="t-label text-neon">C</p><h3 class="font-display uppercase text-2xl mt-3">Il viaggio<br/>è la scoperta</h3><p class="text-sm text-paper/60 mt-2">Si scende dove la musica incuriosisce.</p></li>
+            </ol>
           </div>
-          <div class="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-10 gap-px bg-paper/15 border border-paper/15" id="palette-secondary"></div>
         </div>
+      </section>
 
-        <!-- C · Abbinamento -->
-        <div>
-          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <h3 class="t-label text-paper/50">C · Abbinamento finale — secondaria + primaria</h3>
-            <div class="flex flex-wrap gap-2" id="pairing-filter" role="group" aria-label="Filtra per abbinamento">
-              <button type="button" class="chip is-active" data-filter="tutti">Tutti</button>
-              <button type="button" class="chip" data-filter="nero"><span class="chip-dot" style="background:#0A0A0A"></span>Nero</button>
-              <button type="button" class="chip" data-filter="bianco"><span class="chip-dot" style="background:#FFFFFF"></span>Bianco</button>
-              <button type="button" class="chip" data-filter="verde"><span class="chip-dot" style="background:#1ED760"></span>Verde</button>
+      <!-- =====================================================
+           04 · STAZIONI & GENERI — una stazione alla volta
+           ===================================================== -->
+      <section class="slide bg-abyss" id="stazioni" data-title="Stazioni" aria-roledescription="slide" aria-label="04 Stazioni">
+        <div class="slide-inner">
+          <div class="flex justify-between gap-6" data-anim>
+            <p class="kicker">04 · Le stazioni & i generi</p>
+            <p class="kicker hidden md:block">↑ ↓ cambia stazione</p>
+          </div>
+
+          <div class="flex-1 min-h-0 grid lg:grid-cols-12 gap-8 lg:gap-16 py-[4svh]">
+            <div class="lg:col-span-5 flex flex-col" data-anim style="--d:1">
+              <h2 class="t-lg font-display uppercase">20 fermate. 20 generi.</h2>
+              <div class="mt-auto pt-[3svh]" id="station-detail" aria-live="polite"></div>
+              <div class="flex items-center gap-4 mt-[3svh]">
+                <button type="button" class="btn-square" data-station-step="-1" aria-label="Stazione precedente">←</button>
+                <button type="button" class="btn-square" data-station-step="1" aria-label="Stazione successiva">→</button>
+                <span class="t-label text-paper/50" id="station-count"></span>
+              </div>
+            </div>
+            <div class="lg:col-span-7 station-visual" id="station-visual" data-anim style="--d:2"></div>
+          </div>
+
+          <div class="station-line" id="station-line" data-anim style="--d:3" role="group" aria-label="Le 20 stazioni della Linea 1"></div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           05 · USER FLOW & MAPPA
+           ===================================================== -->
+      <section class="slide bg-night" id="flow" data-title="User flow" aria-roledescription="slide" aria-label="05 User flow">
+        <div class="slide-inner">
+          <div class="flex justify-between gap-6" data-anim>
+            <p class="kicker">05 · User flow & mappa</p>
+            <p class="kicker hidden md:block">↑ ↓ cambia step</p>
+          </div>
+
+          <div class="flex-1 min-h-0 grid lg:grid-cols-12 gap-8 lg:gap-16 pt-8">
+            <div class="lg:col-span-5 flex flex-col" data-anim style="--d:1">
+              <h2 class="t-xl font-display uppercase">La notte del<br/>passeggero</h2>
+              <div class="mt-auto pt-8" id="flow-detail" aria-live="polite"></div>
+              <ol class="flow-steps mt-8" id="flow-steps"></ol>
+            </div>
+
+            <div class="lg:col-span-7 flex flex-col justify-center gap-6" data-anim style="--d:2">
+              <svg id="metro-map" viewBox="0 0 1000 610" class="w-full h-auto max-h-full" role="img" aria-label="Mappa della Linea 1 Metrowave"></svg>
+              <div class="flex flex-wrap items-center justify-between gap-4">
+                <p class="t-label" id="map-caption" aria-live="polite"></p>
+                <button id="play-journey" type="button" class="btn btn--green">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 10 10" fill="currentColor"><polygon points="1,0 10,5 1,10"/></svg>
+                  <span data-label>Avvia il viaggio</span>
+                </button>
+              </div>
             </div>
           </div>
-          <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-5 gap-px bg-paper/15 border border-paper/15" id="palette-pairing"></div>
-          <p class="t-label text-paper/40 mt-3">* abbinamento provvisorio, da validare</p>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         05 · MAPPA INTERATTIVA
-         ===================================================== -->
-    <section id="mappa" data-section class="section bg-night">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">05</span>
-        <span class="col-span-6">Mappa interattiva · Linea 1</span>
-        <span class="col-span-4 text-right">Clicca una stazione</span>
-      </div>
+      <!-- =====================================================
+           06 · AMBIENT ACTIVATION — galleria + lightbox
+           ===================================================== -->
+      <section class="slide bg-abyss" id="activation" data-title="Activation" aria-roledescription="slide" aria-label="06 Ambient activation">
+        <div class="slide-inner">
+          <p class="kicker" data-anim>06 · Ambient activation</p>
 
-      <div class="section-body">
-        <div class="flex flex-wrap items-end justify-between gap-6">
-          <h2 class="t-xl font-display uppercase">Linea 1<br/>Night route</h2>
-          <button id="play-journey" class="inline-flex items-center gap-3 bg-spotify text-night px-6 py-4 t-label font-bold hover:bg-paper transition-colors">
-            <svg class="w-4 h-4" viewBox="0 0 10 10" fill="currentColor"><polygon points="1,0 10,5 1,10"/></svg>
-            <span data-label>Avvia il viaggio</span>
-          </button>
-        </div>
-
-        <div>
-          <div class="grid lg:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
-            <div class="lg:col-span-8 bg-night p-3 md:p-6 flex items-center">
-              <svg id="metro-map" viewBox="0 0 1000 610" class="w-full h-auto" role="img" aria-label="Mappa della Linea 1 Metrowave"></svg>
+          <div class="flex-1 min-h-0 grid lg:grid-cols-12 gap-8 lg:gap-16 pt-8">
+            <div class="lg:col-span-4 flex flex-col" data-anim style="--d:1">
+              <h2 class="t-xl font-display uppercase">Suonano.<br/><span class="text-wred">Nessuno<br/>sente.</span></h2>
+              <div class="mt-auto pt-8 flex flex-col gap-5">
+                <p class="t-body text-paper/75">Nei giorni prima dell'evento, vetrine fonoassorbenti ospitano artisti che suonano in una “bolla di silenzio”.</p>
+                <p class="t-body text-paper/75">Si ascolta solo collegando le proprie cuffie: l'invito a toglierle parte, paradossalmente, proprio da lì.</p>
+                <p class="t-label text-paper/50">↗ Clicca uno scatto per aprirlo</p>
+              </div>
             </div>
-            <aside class="lg:col-span-4 bg-abyss p-6 md:p-8 min-h-[28rem]" id="station-panel" aria-live="polite"></aside>
+            <div class="lg:col-span-8 gallery" id="activation-gallery" data-anim style="--d:2"></div>
           </div>
-          <!-- Su mobile le etichette della mappa sono piccole: selettore a chip -->
-          <div class="lg:hidden flex gap-2 overflow-x-auto pt-4 pb-1" id="map-chips"></div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         06 · USER FLOW
-         ===================================================== -->
-    <section id="flow" data-section class="section bg-abyss">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">06</span>
-        <span class="col-span-10">User flow — la notte di un passeggero</span>
-      </div>
+      <!-- =====================================================
+           07 · TIMETABLE & SPOTIFY EXPERIENCE
+           ===================================================== -->
+      <section class="slide bg-night" id="timetable" data-title="Timetable" aria-roledescription="slide" aria-label="07 Timetable">
+        <div class="slide-inner">
+          <p class="kicker" data-anim>07 · Timetable & Spotify experience</p>
 
-      <div class="section-body">
-        <div class="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
-          <h2 class="reveal t-xl font-display uppercase lg:col-span-7">7 step<br/>fuori dalle cuffie</h2>
-          <p class="reveal t-body text-paper/70 lg:col-span-5">Dal biglietto ai gadget finali: il percorso del passeggero, guidato dall'app, lo spinge passo dopo passo verso generi che non avrebbe mai scelto.</p>
-        </div>
+          <h2 class="t-xl font-display uppercase pt-[3svh]" data-anim style="--d:1">Una notte, cinque ore.</h2>
 
-        <div class="grid lg:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
-          <ol class="lg:col-span-5 bg-abyss flex flex-col" id="flow-steps"></ol>
-          <div class="lg:col-span-7 bg-night p-6 md:p-10 min-h-[30rem]" id="flow-panel" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         07 · TIMETABLE & SPOTIFY
-         ===================================================== -->
-    <section id="timetable" data-section class="section bg-night">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">07</span>
-        <span class="col-span-10">Line-up, timetable & Spotify experience</span>
-      </div>
-
-      <div class="section-body">
-        <h2 class="reveal t-xl font-display uppercase">Tabella<br/>di marcia</h2>
-
-        <div>
-          <div class="grid md:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
-            <div class="md:col-span-3 bg-wred text-night p-6">
-              <p class="t-label">Ora</p>
-              <p class="font-display text-6xl lg:text-7xl leading-none mt-3" id="tt-time">01:00</p>
+          <div class="grid lg:grid-cols-12 gap-8 lg:gap-16 items-end my-auto py-[4svh]" data-anim style="--d:2">
+            <div class="lg:col-span-4">
+              <p class="t-label text-paper/50">Scorri la notte</p>
+              <p class="font-display leading-[0.85] text-[clamp(4rem,min(9vw,14svh),9rem)] text-wred mt-2" id="tt-time">01:00</p>
+              <input id="tt-scrubber" class="scrubber w-full mt-[3svh]" type="range" min="0" max="299" step="1" value="60" aria-label="Orario della notte" />
+              <div class="flex justify-between font-mono text-[11px] text-paper/40 mt-3"><span>00:00</span><span>02:30</span><span>05:00</span></div>
             </div>
-            <div class="md:col-span-6 bg-night p-6 flex flex-col justify-center gap-4">
-              <label for="tt-scrubber" class="t-label text-paper/50">Scorri la notte</label>
-              <input id="tt-scrubber" class="scrubber w-full" type="range" min="0" max="299" step="1" value="60" />
-              <div class="flex justify-between font-mono text-[11px] text-paper/50"><span>00:00</span><span>01:30</span><span>03:30</span><span>05:00</span></div>
-            </div>
-            <div class="md:col-span-3 bg-night p-6">
-              <p class="t-label text-paper/50">Frequenza ANM</p>
-              <p class="font-display text-6xl lg:text-7xl leading-none mt-3">ogni <span id="tt-headway">6</span>′</p>
-              <p class="text-sm text-paper/60 mt-2" id="tt-headway-note"></p>
+            <div class="lg:col-span-8 flex flex-col gap-[3svh]">
+              <ol class="grid sm:grid-cols-3 gap-6" id="tt-slots"></ol>
+              <p class="t-body border-t border-paper/20 pt-4 max-w-none">
+                <span class="t-label text-neon mr-3">ANM</span>Treni ogni <strong id="tt-headway">6</strong> minuti · <span class="text-paper/60" id="tt-headway-note"></span>
+              </p>
             </div>
           </div>
-          <div class="overflow-x-auto border-x border-b border-paper/15 max-h-[34rem] overflow-y-auto">
-            <table class="w-full min-w-[720px] text-left border-collapse" id="timetable-table"></table>
-          </div>
-          <p class="t-label text-paper/40 mt-3">Line-up in definizione · artisti TBA</p>
-        </div>
 
-        <div class="grid lg:grid-cols-12 gap-6 lg:gap-12 items-start">
-          <div class="lg:col-span-4">
-            <h3 class="t-lg font-display uppercase">Flussi notturni<br/>con ANM</h3>
-            <p class="t-body text-paper/65 mt-4">Il festival si integra con l'esercizio notturno: capienze, frequenze e deflussi sono pianificati insieme all'operatore.</p>
-          </div>
-          <ul class="lg:col-span-8 grid sm:grid-cols-2 gap-px bg-paper/15 border border-paper/15">
-            <li class="bg-night p-6"><p class="t-label text-neon">Accessi</p><p class="t-body mt-3">Biglietto attivato in app e ingressi contingentati per fascia oraria, con capienza massima per stazione.</p></li>
-            <li class="bg-night p-6"><p class="t-label text-neon">Treni dedicati</p><p class="t-body mt-3">Convogli Metrowave a frequenza variabile, da 6 a 10 minuti, con i vagoni trasformati in palchi.</p></li>
-            <li class="bg-night p-6"><p class="t-label text-neon">Monitoraggio</p><p class="t-body mt-3">Le scansioni QR in stazione misurano gli afflussi in tempo reale e l'app redistribuisce il pubblico.</p></li>
-            <li class="bg-night p-6"><p class="t-label text-neon">Deflusso</p><p class="t-body mt-3">Dalle 04:00 uscita graduale verso i capolinea, in coincidenza con i primi bus notturni.</p></li>
-          </ul>
-        </div>
-
-        <div class="bg-spotify text-night p-6 md:p-10">
-          <div class="flex flex-wrap items-end justify-between gap-6 border-b-2 border-night pb-6 mb-8">
-            <h3 class="t-lg font-display uppercase">Spotify<br/>experience</h3>
-            <p class="t-label max-w-xs leading-relaxed">L'ecosistema digitale accompagna il passeggero prima, durante e dopo la notte.</p>
-          </div>
-          <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-px bg-night/30 border border-night/30">
-            <div class="info-box bg-spotify !min-h-[13rem]"><p class="font-display text-4xl leading-none">Prima</p><div><p class="font-bold text-lg">Biglietto & quiz</p><p class="text-sm leading-relaxed mt-2">Attivazione in app e quiz sui gusti: stazione più vicina e sfida fuori dalla comfort zone.</p></div></div>
-            <div class="info-box bg-spotify !min-h-[13rem]"><p class="font-display text-4xl leading-none">A bordo</p><div><p class="font-bold text-lg">Mappa live</p><p class="text-sm leading-relaxed mt-2">La sezione Linea 1 dell'app guida il percorso e annuncia i live set nei vagoni.</p></div></div>
-            <div class="info-box bg-spotify !min-h-[13rem]"><p class="font-display text-4xl leading-none">In stazione</p><div><p class="font-bold text-lg">QR & playlist</p><p class="text-sm leading-relaxed mt-2">Ogni scansione illumina la tappa sulla mappa e sblocca la playlist del genere.</p></div></div>
-            <div class="info-box bg-night text-spotify !min-h-[13rem]"><p class="font-display text-4xl leading-none">Dopo</p><div><p class="font-bold text-lg text-paper">Punti & gadget</p><p class="text-sm leading-relaxed mt-2 text-paper/70">I punti accumulati si convertono in bonus e gadget: poster, sticker, vinili, CD.</p></div></div>
+          <div class="spotify-band" data-anim style="--d:3">
+            <p class="font-display uppercase text-3xl leading-none lg:col-span-3">Spotify<br/>experience</p>
+            <ol class="lg:col-span-9 grid grid-cols-2 lg:grid-cols-4 gap-6">
+              <li><p class="t-label">Prima</p><p class="font-bold mt-2">Biglietto & quiz</p><p class="text-sm mt-1 opacity-80">Attivazione in app e sfida fuori dalla comfort zone.</p></li>
+              <li><p class="t-label">A bordo</p><p class="font-bold mt-2">Mappa live</p><p class="text-sm mt-1 opacity-80">La Linea 1 in app guida il percorso.</p></li>
+              <li><p class="t-label">In stazione</p><p class="font-bold mt-2">QR & playlist</p><p class="text-sm mt-1 opacity-80">Ogni scansione sblocca la playlist del genere.</p></li>
+              <li><p class="t-label">Dopo</p><p class="font-bold mt-2">Punti & gadget</p><p class="text-sm mt-1 opacity-80">Poster, sticker, vinili, CD.</p></li>
+            </ol>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =====================================================
-         08 · PROMOZIONE & AMBIENT ACTIVATION
-         ===================================================== -->
-    <section id="promo" data-section class="section bg-abyss">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">08</span>
-        <span class="col-span-10">Promozione & ambient activation</span>
-      </div>
-
-      <div class="section-body">
-        <div class="grid lg:grid-cols-12 gap-6 lg:gap-12 items-end">
-          <h2 class="reveal t-xl font-display uppercase lg:col-span-7">Prima della<br/>notte</h2>
-          <p class="reveal t-body text-paper/70 lg:col-span-5">La campagna mescola canali classici e digitali per portare Metrowave ovunque. Nei giorni precedenti la città si riempie di bolle di silenzio.</p>
-        </div>
-
-        <!-- Promozione -->
-        <div>
-          <h3 class="t-label text-paper/50 mb-4">A · Promozione — canali classici + digitali</h3>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-paper/15 border border-paper/15">
-            <div class="info-box bg-abyss"><p class="t-label text-neon">Classico</p><div><p class="t-md font-display uppercase">Print</p><p class="t-body text-paper/65 mt-2">Poster e materiali editoriali.</p></div></div>
-            <div class="info-box bg-abyss"><p class="t-label text-neon">Classico</p><div><p class="t-md font-display uppercase">Affissioni in metro</p><p class="t-body text-paper/65 mt-2">Le stazioni annunciano il proprio genere.</p></div></div>
-            <div class="info-box bg-abyss"><p class="t-label text-neon">Classico</p><div><p class="t-md font-display uppercase">Teaser TV</p><p class="t-body text-paper/65 mt-2">Spot brevi in avvicinamento all'evento.</p></div></div>
-            <div class="info-box bg-spotify text-night"><p class="t-label">Digitale</p><div><p class="t-md font-display uppercase">Pop-up Spotify</p><p class="t-body mt-2">Annunci e inviti direttamente nell'app.</p></div></div>
-          </div>
-        </div>
-
-        <!-- Ambient activation -->
-        <div>
-          <h3 class="t-label text-paper/50 mb-4">B · Ambient activation — la bolla di silenzio</h3>
-          <div class="grid sm:grid-cols-2 lg:grid-cols-12 gap-px bg-paper/15 border border-paper/15" id="activation-gallery">
-            <div class="sm:col-span-2 lg:col-span-5 bg-wred text-night p-6 md:p-10 flex flex-col gap-6">
-              <p class="t-lg font-display uppercase">Suonano.<br/>Nessuno sente.</p>
-              <p class="t-body">Nei giorni precedenti l'evento, grandi box e vetrine fonoassorbenti ospitano artisti che suonano in una "bolla di silenzio".</p>
-              <p class="t-body">I brani sono udibili all'esterno solo collegando le proprie cuffie alle postazioni dedicate: l'invito a uscire dalle cuffie parte, paradossalmente, proprio dalle cuffie.</p>
-              <p class="t-label mt-auto">↗ Clicca uno scatto per aprirlo a tutto schermo</p>
-            </div>
-            <!-- scatti generati da main.js (METROWAVE_ACTIVATION in stations.js) -->
-          </div>
-        </div>
-      </div>
-    </section>
+    </div>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-wred text-night px-4 md:px-8 pt-20 pb-6">
-    <p class="font-display uppercase leading-[0.82] text-[clamp(3rem,14vw,16rem)]">Fuori dalle<br/>cuffie</p>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t-2 border-night pt-4 mt-10 t-label">
-      <span>Metrowave · L1 Napoli</span>
-      <span>Spotify × ANM × Comune di Napoli</span>
-      <span>Progetto di design & eventi</span>
-      <span class="md:text-right">© 2026</span>
-    </div>
-  </footer>
+  <!-- FRECCE LATERALI -->
+  <button type="button" class="deck-arrow deck-arrow--prev" data-deck-step="-1" aria-label="Slide precedente">←</button>
+  <button type="button" class="deck-arrow deck-arrow--next" data-deck-step="1" aria-label="Slide successiva">→</button>
+
+  <!-- NAVIGAZIONE IN BASSO -->
+  <nav class="deck-footer" aria-label="Slide">
+    <ol class="deck-menu" id="deck-menu"></ol>
+    <p class="t-label shrink-0"><span id="deck-count">01</span> <span class="text-paper/40">/ <span id="deck-total">07</span></span></p>
+    <div class="deck-progress" id="deck-progress"></div>
+  </nav>
 
   <!-- LIGHTBOX · galleria ambient activation -->
   <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" hidden>

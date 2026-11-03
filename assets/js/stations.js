@@ -115,9 +115,9 @@ window.METROWAVE_FLOW = [
 
 /* Fasce orarie della notte (minuti dalle 00:00) */
 window.METROWAVE_SLOTS = [
-  { id: "warmup", label: "Warm-up", from: 0, to: 90 },
-  { id: "peak", label: "Peak time", from: 90, to: 210 },
-  { id: "closing", label: "Closing", from: 210, to: 300 }
+  { id: "warmup", label: "Warm-up", from: 0, to: 90, note: "Apertura delle stazioni, primi live set nei vagoni." },
+  { id: "peak", label: "Peak time", from: 90, to: 210, note: "Tutte le 20 stazioni suonano in contemporanea." },
+  { id: "closing", label: "Closing", from: 210, to: 300, note: "Ultimi set e deflusso verso i capolinea." }
 ];
 
 /* Frequenza dei treni concordata con ANM (minuti dalle 00:00) */
