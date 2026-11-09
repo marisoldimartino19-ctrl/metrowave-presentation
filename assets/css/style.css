@@ -103,7 +103,7 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-vis
 
 /* ---------- USER FLOW: 7 slide ---------- */
 .flow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
-.flow-num { font-family: "Anton", sans-serif; text-transform: uppercase; font-size: clamp(3rem, 8vw, 6rem); line-height: .85; color: var(--spotify); }
+.flow-num { font-family: "Montserrat", sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(3rem, 8vw, 6rem); line-height: .85; color: var(--spotify); }
 .flow-visual {
   flex: 1; min-height: 0; border: 1.5px dashed rgba(242, 239, 232, .35); border-radius: 2px;
   display: flex; align-items: center; justify-content: center; text-align: center;
