@@ -110,26 +110,24 @@
     $("#marquee-genres").innerHTML = `<div class="marquee__track">${items}${items}</div>`;
   }
 
-  /* ---------- 03 · STAZIONI ---------- */
-  function initStationsGrid() {
-    $("#stations-grid").innerHTML = STATIONS.map(
-      (s) => `
-      <button type="button" class="station-card reveal text-left bg-night p-4 sm:p-5 flex flex-col gap-4 min-h-[15rem] sm:min-h-[17rem]" style="--c:${s.color};--ink:${ink(s.color)}" data-goto="${s.id}">
+  /* ---------- 04 · STAZIONI (10 per slide, geometrie protagoniste) ---------- */
+  const stationCard = (s) => `
+      <button type="button" class="station-card station-card--grid reveal text-left bg-night flex flex-col" style="--c:${s.color};--ink:${ink(s.color)}" data-goto="${s.id}">
         <div class="flex justify-between items-baseline gap-3">
-          <span class="font-display text-3xl leading-none">${s.num}</span>
+          <span class="font-display leading-none station-card--num">${s.num}</span>
           <span class="t-label opacity-60">L1</span>
         </div>
-        ${symbolSlot(s, "w-12 h-12 sm:w-16 sm:h-16")}
+        ${symbolSlot(s, "station-card--symbol mx-auto")}
         <div class="mt-auto">
-          <h3 class="font-display uppercase text-xl sm:text-[1.5rem] leading-[0.95]">${s.name}</h3>
-          <p class="t-label mt-2 leading-relaxed">${s.genre}</p>
-          <div class="flex items-center gap-2 mt-3">
-            <span class="station-swatch h-3 flex-1" style="background:${s.color}"></span>
-            <span class="font-mono text-[10px] opacity-60">${s.color}${star(s.confirmed.color)}</span>
-          </div>
+          <h3 class="font-display uppercase leading-[0.95] station-card--name">${s.name}</h3>
+          <p class="t-label mt-1 leading-relaxed">${s.genre}</p>
         </div>
-      </button>`
-    ).join("");
+      </button>`;
+
+  function initStationsGrid() {
+    $("#stations-grid").innerHTML = STATIONS.slice(0, 10).map(stationCard).join("");
+    const gridB = $("#stations-grid-2");
+    if (gridB) gridB.innerHTML = STATIONS.slice(10, 20).map(stationCard).join("");
   }
 
   /* ---------- 04 · SISTEMA CROMATICO ---------- */
@@ -382,7 +380,7 @@
       section.innerHTML = `
         <div class="slide-inner">
           <div class="section-head grid grid-cols-12 gap-4 t-label">
-            <span class="col-span-2">08</span>
+            <span class="col-span-2">07</span>
             <span class="col-span-7">User flow — la notte di un passeggero</span>
             <span class="col-span-3 text-right">Step ${f.num} / ${pad(FLOW.length)}</span>
           </div>
@@ -594,7 +592,7 @@
       prevBtn.disabled = current === 0;
       nextBtn.disabled = current === total - 1;
       const activeId = slides[current].id;
-      const group = activeId.startsWith("flow-") ? "flow-1" : activeId === "concept-2" ? "concept" : activeId;
+      const group = activeId.startsWith("flow-") ? "flow-1" : activeId === "concept-2" ? "concept" : activeId === "stazioni-2" ? "stazioni" : activeId;
       navLinks.forEach((l) => l.classList.toggle("text-wred", l.dataset.gotoSlide === group));
     }
 
@@ -655,8 +653,9 @@
   initMarquee();
   initStationsGrid();
   initPalette();
-  initMap();
-  initGoto();
+  // Sezione Mappa interattiva rimossa dalla presentazione (rimane solo lo
+  // step "Mappa + QR code" nello User Flow): initMap()/initGoto() disattivate,
+  // definizioni e dati (stations.js) lasciati intatti per usi futuri.
   initFlowSlides();
   initTimetable();
   initActivation();

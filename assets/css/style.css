@@ -112,21 +112,36 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-vis
 .flow-visual p { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: rgba(242, 239, 232, .45); max-width: 30ch; }
 .flow-visual.has-demo { background: none; border-style: solid; padding: clamp(1rem, 3vw, 2rem); }
 
+/* ---------- SISTEMA TIPOGRAFICO DEFINITIVO ----------
+   Tre famiglie, ruoli fissi, pesi espliciti (Outfit non ha un
+   "regular" caricato: senza un peso esplicito il browser userebbe
+   un fallback indefinito — ExtraBold è il peso di base corretto
+   per ogni titolo Outfit del progetto; i ruoli che richiedono un
+   peso diverso lo sovrascrivono qui sotto, non con utility Tailwind
+   combinate, per evitare ambiguità di cascata con lo stylesheet
+   del CDN). */
+.font-display { font-weight: 800; } /* Outfit ExtraBold: peso di base dei titoli */
+.t-label { font-weight: 500; }       /* JetBrains Mono Medium: dati ed etichette */
+.t-label-strong { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; } /* dati da evidenziare */
+
 /* ---------- SCALA TIPOGRAFICA ----------
    Titoli massimalisti con tetto massimo: non invadono mai
    il contenuto, né su schermi enormi né su mobile. */
 /* t-mega / t-xl limitati anche in altezza (svh): titolo e testi
    convivono nella stessa schermata anche su monitor bassi. */
-.t-mega { font-size: clamp(2.5rem, min(11vw, 12.5svh), 11rem); line-height: .92; letter-spacing: -.01em; text-wrap: balance; }
-.t-xl   { font-size: clamp(2.25rem, min(7vw, 11svh), 7.5rem); line-height: .92; text-wrap: balance; }
-.t-lg   { font-size: clamp(1.9rem, 3.4vw, 3.5rem); line-height: .92; }
+.t-mega { font-size: clamp(2.5rem, min(11vw, 12.5svh), 11rem); line-height: .92; letter-spacing: -.01em; text-wrap: balance; font-weight: 900; }
+.t-xl   { font-size: clamp(2.25rem, min(7vw, 11svh), 7.5rem); line-height: .92; text-wrap: balance; font-weight: 900; }
+.t-lg   { font-size: clamp(1.9rem, 3.4vw, 3.5rem); line-height: .92; font-weight: 900; }
 
-/* ---------- TITOLI DI SEZIONE (sistema v2) ----------
-   Scala dedicata ai titoli delle slide interne (tutto tranne la
-   cover): forte ma mai oltre 1-2 righe, sempre in alto a sinistra,
-   mai in competizione con mappa/palette/poster per lo spazio. */
-.t-h1 { font-size: clamp(2.1rem, min(5vw, 9svh), 5.5rem); line-height: .96; letter-spacing: -.01em; text-wrap: balance; }
-.t-h2 { font-size: clamp(1.6rem, min(2.8vw, 6.5svh), 2.75rem); line-height: 1; text-wrap: balance; }
+/* ---------- GERARCHIA DELLE SLIDE INTERNE ----------
+   Quattro ruoli distinti (mai titoli giganti che invadono il
+   contenuto): .t-kicker orienta (nome sezione, leggibile ma
+   compatto), .t-h1 è l'headline principale/slogan della slide
+   (grande solo quando lo spazio lo permette), .t-h2 è il
+   sottotitolo, il corpo testo resta su .t-lead/.t-body. */
+.t-kicker { font-size: clamp(1.6rem, min(2.4vw, 5.2svh), 2.75rem); line-height: 1; letter-spacing: -.005em; font-weight: 800; }
+.t-h1 { font-size: clamp(2.1rem, min(5vw, 9svh), 5.5rem); line-height: .96; letter-spacing: -.01em; text-wrap: balance; font-weight: 900; }
+.t-h2 { font-size: clamp(1.6rem, min(2.8vw, 6.5svh), 2.75rem); line-height: 1; text-wrap: balance; font-weight: 700; }
 
 /* Evidenziatore tonale: blocco colore dietro parte del testo,
    lo stesso principio compositivo del poster Medaglie d'Oro
@@ -196,6 +211,7 @@ body {
   font-size: clamp(3rem, min(15vw, 17svh), 13rem);
   line-height: 0.86;
   letter-spacing: -0.02em;
+  font-weight: 900;
 }
 .hero-letter {
   --f: 0;
@@ -233,6 +249,13 @@ body {
   --ink: var(--night);
   transition: background 0.35s, color 0.35s;
 }
+/* Griglia 5x2 (10 stazioni/slide): dimensioni in svh, non in breakpoint di
+   larghezza, così la card si adatta sia a 1920x1080 sia a 1366x768 senza
+   mai tagliare contenuto né richiedere scroll. */
+.station-card--grid { padding: clamp(.55rem, 1.6svh, 1.1rem); gap: clamp(.35rem, 1svh, .9rem); }
+.station-card--num { font-size: clamp(1.15rem, 3svh, 1.9rem); }
+.station-card--symbol { width: clamp(2.6rem, 7.5svh, 5rem); height: clamp(2.6rem, 7.5svh, 5rem); }
+.station-card--name { font-size: clamp(.85rem, 2svh, 1.2rem); }
 .station-card:hover, .station-card:focus-visible {
   background: var(--c);
   color: var(--ink);
