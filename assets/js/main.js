@@ -283,27 +283,27 @@
     panel.innerHTML = `
       <div class="panel-swap h-full flex flex-col">
         <div class="flex justify-between items-start gap-4">
-          <span class="font-display text-6xl leading-none" style="color:${s.color}">${s.num}</span>
-          ${symbolSlot(s, "w-16 h-16")}
+          <span class="font-display text-4xl md:text-5xl leading-none" style="color:${s.color}">${s.num}</span>
+          ${symbolSlot(s, "w-11 h-11 md:w-14 md:h-14")}
         </div>
-        <h3 class="font-display uppercase text-3xl md:text-4xl leading-[0.95] mt-5">${s.name}</h3>
-        <p class="t-label mt-3 self-start px-2 py-1" style="background:${s.color};color:${ink(s.color)}">${s.genre}</p>
+        <h3 class="font-display uppercase text-2xl md:text-3xl leading-[0.95] mt-3">${s.name}</h3>
+        <p class="t-label mt-2 self-start px-2 py-1" style="background:${s.color};color:${ink(s.color)}">${s.genre}</p>
 
-        <dl class="grid grid-cols-2 gap-px bg-paper/15 border border-paper/15 mt-5 text-sm">
-          <div class="bg-night p-3">
+        <dl class="grid grid-cols-2 gap-px bg-paper/15 border border-paper/15 mt-3 text-sm">
+          <div class="bg-night p-2.5">
             <dt class="t-label text-paper/50">Colore${star(s.confirmed.color)}</dt>
-            <dd class="flex items-center gap-2 mt-2 font-mono"><span class="w-4 h-4" style="background:${s.color}"></span>${s.color}</dd>
+            <dd class="flex items-center gap-2 mt-1.5 font-mono text-xs"><span class="w-3.5 h-3.5" style="background:${s.color}"></span>${s.color}</dd>
           </div>
-          <div class="bg-night p-3">
+          <div class="bg-night p-2.5">
             <dt class="t-label text-paper/50">Abbinamento${star(s.confirmed.pairing)}</dt>
-            <dd class="flex items-center gap-2 mt-2 font-bold"><span class="w-4 h-4 border border-paper/30" style="background:${p.hex}"></span>${p.label}</dd>
+            <dd class="flex items-center gap-2 mt-1.5 font-bold text-xs"><span class="w-3.5 h-3.5 border border-paper/30" style="background:${p.hex}"></span>${p.label}</dd>
           </div>
         </dl>
-        <p class="t-label text-paper/40 mt-4">Scheda stazione e line-up in definizione</p>
+        <p class="t-label text-paper/40 mt-3 text-[10px]">Scheda stazione e line-up in definizione</p>
 
-        <div class="flex gap-px mt-auto pt-5">
-          <button type="button" data-step="-1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night">← Prec.</button>
-          <button type="button" data-step="1" class="flex-1 border border-paper/30 py-3 t-label hover:bg-paper hover:text-night">Succ. →</button>
+        <div class="flex gap-px mt-auto pt-3">
+          <button type="button" data-step="-1" class="flex-1 border border-paper/30 py-2 t-label hover:bg-paper hover:text-night">← Prec.</button>
+          <button type="button" data-step="1" class="flex-1 border border-paper/30 py-2 t-label hover:bg-paper hover:text-night">Succ. →</button>
         </div>
       </div>`;
     $$("[data-step]", panel).forEach((b) =>
@@ -369,8 +369,7 @@
   const FLOW_PLACEHOLDER = [
     "VISUAL IN SVILUPPO — BIGLIETTO DIGITALE METRO WAVE",
     null, // step 2: demo quiz già funzionante, nessun placeholder
-    "VISUAL IN SVILUPPO — MAPPA NELL'APP METRO WAVE",
-    "VISUAL IN SVILUPPO — SCANSIONE QR CODE",
+    "VISUAL IN SVILUPPO — MAPPA + QR CODE METRO WAVE",
     "VISUAL IN SVILUPPO — PERFORMANCE A BORDO",
     "VISUAL IN SVILUPPO — ESPERIENZA IN STAZIONE",
     "VISUAL IN SVILUPPO — MERCHANDISING & REWARD"
@@ -383,9 +382,9 @@
       section.innerHTML = `
         <div class="slide-inner">
           <div class="section-head grid grid-cols-12 gap-4 t-label">
-            <span class="col-span-2">06</span>
+            <span class="col-span-2">08</span>
             <span class="col-span-7">User flow — la notte di un passeggero</span>
-            <span class="col-span-3 text-right">Step ${f.num} / 07</span>
+            <span class="col-span-3 text-right">Step ${f.num} / ${pad(FLOW.length)}</span>
           </div>
           <div class="flex-1 min-h-0 flex flex-col gap-6">
             <div class="flow-head">
@@ -489,7 +488,7 @@
     $("#activation-gallery").innerHTML = SHOTS.map(
       (shot, i) => `
       <button type="button" class="shot group relative overflow-hidden bg-night text-left" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
-        <div class="shot-media aspect-[4/5] md:aspect-[3/4]">${shotImg(shot, "w-full h-full block object-cover", true)}</div>
+        <div class="shot-media aspect-[4/5] md:aspect-[16/11]">${shotImg(shot, "w-full h-full block object-cover", true)}</div>
         <div class="shot-meta absolute inset-x-0 bottom-0 p-4 md:p-5">
           <p class="t-label text-paper/70">${shot.place}</p>
           <p class="font-display uppercase text-2xl leading-none mt-2">${shot.title}</p>
@@ -595,7 +594,7 @@
       prevBtn.disabled = current === 0;
       nextBtn.disabled = current === total - 1;
       const activeId = slides[current].id;
-      const group = activeId.startsWith("flow-") ? "flow-1" : activeId === "activation" ? "promo" : activeId;
+      const group = activeId.startsWith("flow-") ? "flow-1" : activeId === "concept-2" ? "concept" : activeId;
       navLinks.forEach((l) => l.classList.toggle("text-wred", l.dataset.gotoSlide === group));
     }
 

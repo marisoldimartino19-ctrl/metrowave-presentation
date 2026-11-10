@@ -120,6 +120,34 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-vis
 .t-mega { font-size: clamp(2.5rem, min(11vw, 12.5svh), 11rem); line-height: .92; letter-spacing: -.01em; text-wrap: balance; }
 .t-xl   { font-size: clamp(2.25rem, min(7vw, 11svh), 7.5rem); line-height: .92; text-wrap: balance; }
 .t-lg   { font-size: clamp(1.9rem, 3.4vw, 3.5rem); line-height: .92; }
+
+/* ---------- TITOLI DI SEZIONE (sistema v2) ----------
+   Scala dedicata ai titoli delle slide interne (tutto tranne la
+   cover): forte ma mai oltre 1-2 righe, sempre in alto a sinistra,
+   mai in competizione con mappa/palette/poster per lo spazio. */
+.t-h1 { font-size: clamp(2.1rem, min(5vw, 9svh), 5.5rem); line-height: .96; letter-spacing: -.01em; text-wrap: balance; }
+.t-h2 { font-size: clamp(1.6rem, min(2.8vw, 6.5svh), 2.75rem); line-height: 1; text-wrap: balance; }
+
+/* Evidenziatore tonale: blocco colore dietro parte del testo,
+   lo stesso principio compositivo del poster Medaglie d'Oro
+   (non un semplice colore di testo: un vero blocco di peso). */
+.hl-block { display: inline-block; padding: 0 .14em; line-height: .92; }
+
+/* Numero fantasma: stessa tecnica outline della cover (vedi
+   .hero-letter.outline), riusata in scala ridotta come ancora
+   grafica nelle slide testuali/narrative a basso contenuto visivo.
+   Puro elemento tipografico esistente, non un simbolo nuovo. */
+.ghost-num {
+  position: absolute;
+  z-index: 0;
+  font-family: "Outfit", sans-serif;
+  font-weight: 900;
+  line-height: .8;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242, 239, 232, .14);
+  pointer-events: none;
+  user-select: none;
+}
 .t-md   { font-size: clamp(1.6rem, 2.4vw, 2.5rem); line-height: .95; }
 .t-lead { font-size: clamp(1.125rem, 1.45vw, 1.5rem); line-height: 1.4; max-width: 38ch; }
 .t-body { font-size: 1rem; line-height: 1.6; max-width: 60ch; }
