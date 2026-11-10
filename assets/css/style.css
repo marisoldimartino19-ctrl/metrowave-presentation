@@ -254,7 +254,7 @@ body {
    mai tagliare contenuto né richiedere scroll. */
 .station-card--grid { padding: clamp(.55rem, 1.6svh, 1.1rem); gap: clamp(.35rem, 1svh, .9rem); }
 .station-card--num { font-size: clamp(1.15rem, 3svh, 1.9rem); }
-.station-card--symbol { width: clamp(2.6rem, 7.5svh, 5rem); height: clamp(2.6rem, 7.5svh, 5rem); }
+.station-card--symbol { width: clamp(3.6rem, 11svh, 7.5rem); height: clamp(3.6rem, 11svh, 7.5rem); }
 .station-card--name { font-size: clamp(.85rem, 2svh, 1.2rem); }
 .station-card:hover, .station-card:focus-visible {
   background: var(--c);

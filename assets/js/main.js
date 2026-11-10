@@ -117,7 +117,9 @@
           <span class="font-display leading-none station-card--num">${s.num}</span>
           <span class="t-label opacity-60">L1</span>
         </div>
-        ${symbolSlot(s, "station-card--symbol mx-auto")}
+        <div class="flex-1 flex items-center justify-center min-h-0">
+          ${symbolSlot(s, "station-card--symbol")}
+        </div>
         <div class="mt-auto">
           <h3 class="font-display uppercase leading-[0.95] station-card--name">${s.name}</h3>
           <p class="t-label mt-1 leading-relaxed">${s.genre}</p>
