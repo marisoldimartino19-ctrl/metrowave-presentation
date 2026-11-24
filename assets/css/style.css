@@ -251,15 +251,6 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-vis
 .t-body { font-size: 1rem; line-height: 1.6; max-width: 60ch; }
 .t-label { font-family: "JetBrains Mono", monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
 
-/* Box informativi: altezza minima uniforme, contenuto in colonna */
-.info-box {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem);
-  min-height: 11rem;
-}
-.info-box > :last-child { margin-top: auto; }
 body {
   background: var(--night);
   color: var(--paper);
@@ -589,29 +580,6 @@ body.overlay-open { overflow: hidden; }
   .detail-view .lightbox-nav { top: auto; bottom: 1rem; transform: none; }
 }
 
-/* ---------- TIMETABLE ----------
-   21 righe (vagoni + 20 stazioni) devono stare nello spazio disponibile
-   senza scrollbar interna: padding e font in clamp(), non fissi — stesso
-   principio già usato ovunque nel deck. Una riga per stazione (genere nel
-   tooltip, non in una seconda riga) per tenere l'altezza sotto controllo. */
-.tt-cell { padding-block: clamp(.04rem, .18svh, .35rem); padding-inline: clamp(.4rem, .8vw, .75rem); }
-.tt-cell__name { font-size: clamp(.6rem, 1.25svh, .95rem); }
-.tt-cell__slot { font-size: clamp(.56rem, 1.1svh, .8rem); }
-.tt-swatch { width: clamp(.5rem, 1.1svh, .75rem); height: clamp(.5rem, 1.1svh, .75rem); }
-.tt-head { font-family: "JetBrains Mono", monospace; font-size: clamp(.5rem, .95svh, .62rem); letter-spacing: .1em; text-transform: uppercase; line-height: 1.5; }
-.tt-head__range { font-size: clamp(.42rem, .8svh, .55rem); letter-spacing: .04em; }
-.slot-cell { transition: background .3s, color .3s, opacity .3s; }
-.slot-cell.is-live { background: var(--c); color: var(--ink); }
-.slot-cell.is-past { opacity: .3; }
-.timetable-scroll { overflow-y: hidden; }
-.tt-stack { gap: clamp(.2rem, 1.1svh, 1rem); }
-.tt-panel { padding: clamp(.3rem, 1svh, .75rem); }
-.tt-panel__value { font-size: clamp(1.1rem, 3.6svh, 2.25rem); }
-
-input[type="range"].scrubber { -webkit-appearance: none; appearance: none; height: 6px; background: var(--line); }
-input[type="range"].scrubber::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--red); border: 0; cursor: grab; }
-input[type="range"].scrubber::-moz-range-thumb { width: 28px; height: 28px; background: var(--red); border: 0; border-radius: 0; cursor: grab; }
-
 /* ---------- REVEAL ALL'INGRESSO DELLA SLIDE ---------- */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .45s cubic-bezier(.2,.8,.2,1), transform .45s cubic-bezier(.2,.8,.2,1); }
 .reveal.is-in { opacity: 1; transform: none; }
@@ -634,4 +602,3 @@ input[type="range"].scrubber::-moz-range-thumb { width: 28px; height: 28px; back
 
 /* Le card usano sia il reveal sia l'hover a colore */
 .station-card.reveal { transition: opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1), background .35s, color .35s; }
-@media (min-width: 768px) { .info-box { min-height: 9.5rem; } }

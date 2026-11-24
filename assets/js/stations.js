@@ -1,6 +1,6 @@
 /* =========================================================
    METROWAVE — Dati del progetto
-   Unica fonte dati: card, palette, pannello, quiz e timetable
+   Unica fonte dati: card, palette, pannello e quiz
    vengono generati da qui.
 
    Campi stazione
@@ -87,17 +87,3 @@ window.METROWAVE_STATIONS = [
     symbol: "assets/symbols/20-centro-direzionale.svg" }
 ];
 
-
-/* Fasce orarie della notte (minuti dalle 00:00) */
-window.METROWAVE_SLOTS = [
-  { id: "warmup", label: "Warm-up", from: 0, to: 90, note: "Apertura delle stazioni, primi live set nei vagoni." },
-  { id: "peak", label: "Peak time", from: 90, to: 210, note: "Tutte le 20 stazioni suonano in contemporanea." },
-  { id: "closing", label: "Closing", from: 210, to: 300, note: "Ultimi set e deflusso verso i capolinea." }
-];
-
-/* Frequenza dei treni concordata con ANM (minuti dalle 00:00) */
-window.METROWAVE_HEADWAY = [
-  { from: 0, to: 120, every: 6, note: "Afflusso massimo: treni ravvicinati" },
-  { from: 120, to: 240, every: 8, note: "Regime di crociera" },
-  { from: 240, to: 300, every: 10, note: "Deflusso graduale verso i capolinea" }
-];

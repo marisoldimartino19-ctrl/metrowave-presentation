@@ -34,7 +34,6 @@
       <li><a href="#promo" data-nav data-goto-slide="promo" class="py-2 block hover:text-wred transition-colors">06 Promo</a></li>
       <li><a href="#ticket" data-nav data-goto-slide="ticket" class="py-2 block hover:text-wred transition-colors">07 Biglietto cartaceo</a></li>
       <li><a href="#flow-1" data-nav data-goto-slide="flow-1" class="py-2 block hover:text-wred transition-colors">08 User flow</a></li>
-      <li><a href="#timetable" data-nav data-goto-slide="timetable" class="py-2 block hover:text-wred transition-colors">09 Timetable</a></li>
     </ul>
     <span class="shrink-0 font-mono tabular-nums" id="slide-counter" aria-live="polite">01 / 17</span>
   </nav>
@@ -366,73 +365,6 @@
             <iframe class="spotify-embed__iframe" id="spotify-embed-iframe" src="spotify-experience/" title="Prototipo interattivo Metro Wave nell'app Spotify" loading="lazy"></iframe>
           </div>
           <button type="button" class="spotify-embed__cta" id="spotify-embed-open">Apri esperienza</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================
-       09 · TIMETABLE & SPOTIFY EXPERIENCE
-       ===================================================== -->
-  <section id="timetable" data-section class="slide bg-night" aria-label="09 — Timetable, 1 di 2">
-    <div class="slide-inner">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">09</span>
-        <span class="col-span-7">Timetable</span>
-        <span class="col-span-3 text-right">01 / 02</span>
-      </div>
-
-      <div class="tt-stack flex-1 min-h-0 flex flex-col">
-        <div>
-          <h2 class="reveal t-lg font-display uppercase">Tabella di marcia</h2>
-          <p class="t-label text-paper/40 mt-1">Simulazione progettuale · orari e frequenze non ufficiali, da confermare con ANM</p>
-        </div>
-
-        <div class="grid md:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
-          <div class="tt-panel md:col-span-3 bg-wred text-night">
-            <p class="t-label">Ora</p>
-            <p class="tt-panel__value font-display leading-none mt-1" id="tt-time">01:00</p>
-          </div>
-          <div class="tt-panel md:col-span-6 bg-night flex flex-col justify-center gap-2">
-            <label for="tt-scrubber" class="t-label text-paper/50">Scorri la notte</label>
-            <input id="tt-scrubber" class="scrubber w-full" type="range" min="0" max="299" step="1" value="60" />
-            <div class="flex justify-between font-mono text-[11px] text-paper/50"><span>00:00</span><span>01:30</span><span>03:30</span><span>05:00</span></div>
-          </div>
-          <div class="tt-panel md:col-span-3 bg-night">
-            <p class="t-label text-paper/50">Frequenza ANM</p>
-            <p class="tt-panel__value font-display leading-none mt-1">ogni <span id="tt-headway">6</span>′</p>
-            <p class="text-xs text-paper/60 mt-1" id="tt-headway-note"></p>
-          </div>
-        </div>
-        <div class="timetable-scroll flex-1 min-h-0 overflow-x-auto border-x border-b border-paper/15">
-          <table class="w-full min-w-[720px] text-left border-collapse" id="timetable-table"></table>
-        </div>
-        <p class="t-label text-paper/40">Line-up in definizione · artisti TBA</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- =====================================================
-       08b · SPOTIFY EXPERIENCE (slide propria, non più in coda
-       alla tabella di marcia)
-       ===================================================== -->
-  <section id="timetable-2" data-section class="slide bg-spotify text-night" aria-label="09 — Timetable, 2 di 2">
-    <div class="slide-inner">
-      <div class="section-head grid grid-cols-12 gap-4 t-label">
-        <span class="col-span-2">09</span>
-        <span class="col-span-7">Timetable</span>
-        <span class="col-span-3 text-right">02 / 02</span>
-      </div>
-      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8">
-        <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
-          <h2 class="reveal t-h1 font-display uppercase lg:col-span-7">Spotify experience</h2>
-          <p class="reveal t-lead lg:col-span-5">L'ecosistema digitale accompagna il passeggero prima, durante e dopo la notte.</p>
-        </div>
-        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-px bg-night/30 border border-night/30">
-          <div class="info-box bg-spotify"><p class="font-display text-2xl leading-none">Prima</p><div><p class="font-bold">Biglietto & quiz</p><p class="text-sm leading-snug mt-1">Quiz sui gusti: stazione più vicina e sfida fuori comfort zone.</p></div></div>
-          <div class="info-box bg-spotify"><p class="font-display text-2xl leading-none">A bordo</p><div><p class="font-bold">Mappa live</p><p class="text-sm leading-snug mt-1">La mappa guida il percorso e annuncia i live set nei vagoni.</p></div></div>
-          <div class="info-box bg-spotify"><p class="font-display text-2xl leading-none">In stazione</p><div><p class="font-bold">QR & playlist</p><p class="text-sm leading-snug mt-1">Ogni scansione illumina la tappa e sblocca la playlist del genere.</p></div></div>
-          <div class="info-box bg-night text-spotify"><p class="font-display text-2xl leading-none">Dopo</p><div><p class="font-bold text-paper">Punti & gadget</p><p class="text-sm leading-snug mt-1 text-paper/70">I punti si convertono in gadget: poster, sticker, vinili, CD.</p></div></div>
         </div>
       </div>
     </div>

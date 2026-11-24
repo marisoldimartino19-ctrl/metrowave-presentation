@@ -8,14 +8,11 @@
   const STATIONS = window.METROWAVE_STATIONS;
   const PRIMARY = window.METROWAVE_PRIMARY;
   const PAIRINGS = window.METROWAVE_PAIRINGS;
-  const SLOTS = window.METROWAVE_SLOTS;
-  const HEADWAY = window.METROWAVE_HEADWAY;
   const NIGHT = "#07070C";
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const pad = (n) => String(n).padStart(2, "0");
-  const fmtMinutes = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
 
   // Colore del testo leggibile su un fondo: tra nero e bianco, quello con il
   // rapporto di contrasto WCAG più alto
@@ -300,53 +297,6 @@
       if (e.key === "Escape") seCloseFullscreen();
     });
   })();
-
-  /* ---------- 07 · TIMETABLE ---------- */
-  function initTimetable() {
-    const table = $("#timetable-table");
-    const rows = [
-      { name: "A bordo", genre: "Vagoni · artisti emergenti", color: "#1ED760", acts: ["Live set", "Live set", "Live set"] },
-      ...STATIONS.map((s) => ({ name: `${s.num} ${s.name}`, genre: s.genre, color: s.color, acts: ["TBA", "TBA", "TBA"] }))
-    ];
-    // Righe tabella: padding e font in clamp() legati all'altezza di viewport —
-    // 21 righe devono stare nello spazio disponibile senza scrollbar interna,
-    // su qualunque altezza di finestra (stesso principio delle altre slide).
-    table.innerHTML = `
-      <thead class="tt-head text-paper/50 sticky top-0 bg-night z-10">
-        <tr class="border-b-2 border-paper">
-          <th class="tt-cell w-[34%] font-normal">Stazione</th>
-          ${SLOTS.map((sl) => `<th class="tt-cell font-normal">${sl.label}<br/><span class="tt-head__range text-paper/40">${fmtMinutes(sl.from)}—${fmtMinutes(sl.to)}</span></th>`).join("")}
-        </tr>
-      </thead>
-      <tbody>
-        ${rows.map((r) => `
-          <tr class="border-b border-paper/10" style="--c:${r.color};--ink:${ink(r.color)}">
-            <td class="tt-cell">
-              <span class="flex items-center gap-3" title="${r.genre}">
-                <span class="tt-swatch shrink-0" style="background:${r.color}"></span>
-                <span class="font-display uppercase tt-cell__name leading-none">${r.name}</span>
-              </span>
-            </td>
-            ${r.acts.map((act, k) => `<td class="slot-cell tt-cell tt-cell__slot font-bold" data-slot="${k}">${act}</td>`).join("")}
-          </tr>`).join("")}
-      </tbody>`;
-
-    const scrubber = $("#tt-scrubber");
-    const update = () => {
-      const m = Number(scrubber.value);
-      $("#tt-time").textContent = fmtMinutes(m);
-      const h = HEADWAY.find((x) => m >= x.from && m < x.to);
-      $("#tt-headway").textContent = h.every;
-      $("#tt-headway-note").textContent = h.note;
-      $$(".slot-cell", table).forEach((cell) => {
-        const sl = SLOTS[cell.dataset.slot];
-        cell.classList.toggle("is-live", m >= sl.from && m < sl.to);
-        cell.classList.toggle("is-past", m >= sl.to);
-      });
-    };
-    scrubber.addEventListener("input", update);
-    update();
-  }
 
   /* ---------- LIGHTBOX GENERICO: condiviso da Promo, User Flow e Ambient ---------- */
   const lbItemImg = (item, cls, lazy) =>
@@ -699,7 +649,6 @@
   initPalette();
   initConceptStops();
   initTicketGallery();
-  initTimetable();
   initPromoGallery();
   initActivation();
   initDeck();
