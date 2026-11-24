@@ -215,7 +215,7 @@
     toastTimer = setTimeout(() => t.classList.remove("is-on"), 1600);
   }
 
-  /* ---------- 07 · USER FLOW — biglietto Spotify + esperienza interattiva ---------- */
+  /* ---------- 08 · USER FLOW — biglietto Spotify + esperienza interattiva ---------- */
   // Pattern QR deterministico (stesso seed = stesso disegno): non è un codice
   // funzionante, è il motivo grafico del "biglietto/scansione digitale".
   function qrPattern(seed, n = 6) {
@@ -344,35 +344,146 @@
     });
   })();
 
-  /* ---------- 06 · PROMO: poster print + affissioni, ogni edizione visibile per intero ---------- */
-  const PROMO_GALLERY = [
-    { src: "assets/images/posters/01-piscinola-print.jpg", place: "Print · 70×100 cm", title: "01 · Piscinola", caption: "Hip Hop / Rap — poster editoriale, affisso in stazione e nei punti vendita." },
-    { src: "assets/images/posters/08-medaglie-d-oro-print.jpg", place: "Print · 70×100 cm", title: "08 · Medaglie d'Oro", caption: "Pop — poster editoriale, affisso in stazione e nei punti vendita." },
-    { src: "assets/images/posters/09-vanvitelli-print.jpg", place: "Print · 70×100 cm", title: "09 · Vanvitelli", caption: "Jazz — poster editoriale, affisso in stazione e nei punti vendita." },
-    { src: "assets/images/posters/01-piscinola-affissione.jpg", place: "Affissione · 6×3 m", title: "01 · Piscinola", caption: "Hip Hop / Rap — formato banchina, nei corridoi della metro." },
-    { src: "assets/images/posters/08-medaglie-d-oro-affissione.jpg", place: "Affissione · 6×3 m", title: "08 · Medaglie d'Oro", caption: "Pop — formato banchina, nei corridoi della metro." },
-    { src: "assets/images/posters/09-vanvitelli-affissione.jpg", place: "Affissione · 6×3 m", title: "09 · Vanvitelli", caption: "Jazz — formato banchina, nei corridoi della metro." },
+  /* ---------- VISTA DI APPROFONDIMENTO: schermata dedicata per categoria
+     (Promo, Ambient) — diversa dal lightbox: ha titolo di categoria, può
+     mostrare un placeholder senza immagine, e naviga fra più materiali
+     futuri della stessa categoria senza dover ricostruire l'interfaccia. */
+  let DV_CATEGORY = null;
+  let DV_INDEX = 0;
+  let DV_LAST_FOCUS = null;
+  const dvBox = () => $("#detail-view");
+
+  function dvRenderStage() {
+    const cat = DV_CATEGORY;
+    const items = cat.items || [];
+    const multi = items.length > 1;
+    if (cat.type === "placeholder") {
+      $("#detail-stage").innerHTML = `
+        <div class="detail-placeholder">
+          <span class="detail-placeholder__glyph" aria-hidden="true">▶</span>
+          <span class="t-label">${cat.placeholderLabel}</span>
+        </div>`;
+      $("#detail-count").textContent = "";
+      $("#detail-caption").textContent = cat.description;
+    } else {
+      const item = items[DV_INDEX];
+      const cls = cat.type === "portrait" ? "detail-media--portrait" : "detail-media--contain";
+      $("#detail-stage").innerHTML = lbItemImg(item, cls, false);
+      $("#detail-count").textContent = multi ? `${pad(DV_INDEX + 1)} / ${pad(items.length)}` : "";
+      $("#detail-caption").textContent = item.caption || cat.description || "";
+    }
+    $$("[data-detail-step]", dvBox()).forEach((b) => (b.hidden = !multi));
+  }
+
+  function dvShow(i) {
+    const len = (DV_CATEGORY.items || []).length || 1;
+    DV_INDEX = (i + len) % len;
+    dvRenderStage();
+  }
+  function dvOpen(category, i = 0) {
+    DV_CATEGORY = category;
+    DV_LAST_FOCUS = document.activeElement;
+    const box = dvBox();
+    $("#detail-num").textContent = category.num;
+    $("#detail-title").textContent = category.title;
+    dvShow(i);
+    box.hidden = false;
+    document.body.classList.add("overlay-open");
+    void box.offsetWidth;
+    box.classList.add("is-open");
+    $("[data-detail-close]", box).focus();
+  }
+  function dvClose() {
+    const box = dvBox();
+    box.classList.remove("is-open");
+    document.body.classList.remove("overlay-open");
+    setTimeout(() => (box.hidden = true), 250);
+    DV_LAST_FOCUS?.focus();
+  }
+  (function initDetailView() {
+    const box = dvBox();
+    box.addEventListener("click", (e) => {
+      const nav = e.target.closest("[data-detail-step]");
+      if (nav) { dvShow(DV_INDEX + Number(nav.dataset.detailStep)); return; }
+      if (e.target.closest("[data-detail-close]") || e.target === box) dvClose();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (box.hidden) return;
+      if (e.key === "Escape") dvClose();
+      else if (e.key === "ArrowRight") dvShow(DV_INDEX + 1);
+      else if (e.key === "ArrowLeft") dvShow(DV_INDEX - 1);
+      else if (e.key === "Tab") {
+        const items = $$("button", box).filter((b) => !b.hidden);
+        const k = items.indexOf(document.activeElement);
+        e.preventDefault();
+        items[(k + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
+      }
+    });
+  })();
+
+  /* ---------- 06 · PROMO: tre categorie di campagna, ognuna con una vista
+     di approfondimento dedicata — struttura ad array, facilmente estendibile
+     con nuovi materiali per categoria senza toccare il markup. ---------- */
+  const PROMO_CATEGORIES = [
+    {
+      id: "affissioni", num: "01", title: "Affissioni in metro", timing: "-3 settimane",
+      description: "Nelle banchine, ogni stazione annuncia il proprio genere.",
+      type: "gallery",
+      items: [
+        { src: "assets/images/posters/01-piscinola-affissione.jpg", title: "01 · Piscinola", caption: "Hip Hop / Rap — formato banchina, nei corridoi della metro." },
+        { src: "assets/images/posters/08-medaglie-d-oro-affissione.jpg", title: "08 · Medaglie d'Oro", caption: "Pop — formato banchina, nei corridoi della metro." },
+        { src: "assets/images/posters/09-vanvitelli-affissione.jpg", title: "09 · Vanvitelli", caption: "Jazz — formato banchina, nei corridoi della metro." },
+      ],
+    },
+    {
+      id: "teaser", num: "02", title: "Teaser TV", timing: "-1 settimana",
+      description: "Spot brevi in avvicinamento all'evento.",
+      type: "placeholder", placeholderLabel: "Teaser TV — in arrivo",
+    },
+    {
+      id: "spotify", num: "03", title: "Pop-up Spotify", timing: "La sera stessa",
+      description: "Annunci e inviti ipotizzati direttamente nell'app (partnership non confermata).",
+      type: "portrait",
+      items: [{ src: "assets/images/promo/pop-up-spotify.png", title: "Pop-up Spotify", caption: "Annuncio ipotizzato nell'app Spotify, aperto agli utenti nella zona del festival." }],
+    },
   ];
 
+  function promoCardMedia(cat) {
+    if (cat.type === "gallery") {
+      return `<span class="promo-card__stack">${cat.items.map((it) => `<span class="promo-card__poster">${lbItemImg(it, "", true)}</span>`).join("")}</span>`;
+    }
+    if (cat.type === "placeholder") {
+      return `<span class="promo-card__placeholder"><span class="promo-card__placeholder-glyph" aria-hidden="true">▶</span><span class="t-label">${cat.placeholderLabel}</span></span>`;
+    }
+    return `<span class="promo-card__portrait">${lbItemImg(cat.items[0], "", true)}</span>`;
+  }
+
   function initPromoGallery() {
-    const thumb = (item, i) => `
-      <button type="button" class="promo-thumb" data-item="${i}" aria-label="Apri a tutto schermo: ${item.title}, ${item.place}">
-        ${lbItemImg(item, "w-full h-full block object-cover", true)}
-        <span class="promo-thumb__tag t-label">${item.title}</span>
-      </button>`;
-    $("#promo-gallery").innerHTML = `
-      <div class="promo-gallery__row promo-gallery__row--print">${PROMO_GALLERY.slice(0, 3).map((item, i) => thumb(item, i)).join("")}</div>
-      <div class="promo-gallery__row promo-gallery__row--affissione">${PROMO_GALLERY.slice(3, 6).map((item, i) => thumb(item, i + 3)).join("")}</div>`;
-    $("#promo-gallery").addEventListener("click", (e) => {
-      const tile = e.target.closest("[data-item]");
-      if (tile) lbOpen(PROMO_GALLERY, Number(tile.dataset.item));
+    $("#promo-categories").innerHTML = PROMO_CATEGORIES.map((cat, i) => `
+      <button type="button" class="promo-card" data-cat="${i}" aria-label="Apri la categoria a schermo intero: ${cat.title}">
+        <span class="promo-card__top">
+          <span class="t-label text-paper/45">${cat.timing}</span>
+          <span class="promo-card__open" aria-hidden="true">⤢</span>
+        </span>
+        <span class="promo-card__media">${promoCardMedia(cat)}</span>
+        <span class="promo-card__body">
+          <span class="font-display uppercase promo-card__title">${cat.title}</span>
+          <span class="t-body text-sm text-paper/60">${cat.description}</span>
+        </span>
+      </button>`).join("");
+    $("#promo-categories").addEventListener("click", (e) => {
+      const card = e.target.closest("[data-cat]");
+      if (card) dvOpen(PROMO_CATEGORIES[Number(card.dataset.cat)]);
     });
   }
 
-  /* ---------- 07 · USER FLOW: biglietto cartaceo, fronte e retro a schermo intero ---------- */
+  /* ---------- BIGLIETTO CARTACEO vs DIGITALE: due gallerie affiancate, per confronto ---------- */
   const TICKET_GALLERY = [
     { src: "assets/images/tickets/biglietto-cartaceo-fronte.png", place: "Fronte", title: "Biglietto cartaceo", caption: "Tagliando ANM, in vendita alle biglietterie digitali di ogni stazione." },
     { src: "assets/images/tickets/biglietto-cartaceo-retro.png", place: "Retro", title: "Biglietto cartaceo", caption: "QR di accesso, valido su tutta la Linea 1 per la notte del festival." },
+  ];
+  const TICKET_DIGITAL = [
+    { src: "assets/images/tickets/biglietto-digitale.jpg", place: "Digitale", title: "Biglietto digitale", caption: "Wave Pass nell'app Spotify: stesso accesso di una notte, QR generato nell'app." },
   ];
 
   function initTicketGallery() {
@@ -386,32 +497,35 @@
       const tile = e.target.closest("[data-item]");
       if (tile) lbOpen(TICKET_GALLERY, Number(tile.dataset.item));
     });
+
+    $("#ticket-showcase-digital").innerHTML = TICKET_DIGITAL.map((item, i) => `
+      <button type="button" class="ticket-big ticket-big--digitale" data-item="${i}" aria-label="Apri a tutto schermo: ${item.title}">
+        ${lbItemImg(item, "w-full h-full block object-cover", true)}
+        <span class="ticket-big__tag t-label">${item.place}</span>
+      </button>`).join("");
+    $("#ticket-showcase-digital").addEventListener("click", (e) => {
+      const tile = e.target.closest("[data-item]");
+      if (tile) lbOpen(TICKET_DIGITAL, Number(tile.dataset.item));
+    });
   }
 
-  /* ---------- 08 · AMBIENT ACTIVATION: galleria editoriale + lightbox ---------- */
-  function initActivation() {
-    const SHOTS = window.METROWAVE_ACTIVATION;
-    $("#activation-gallery").innerHTML = SHOTS.map(
-      (shot, i) => `
-      <button type="button" class="shot group relative overflow-hidden bg-night text-left" data-shot="${i}" aria-label="Apri a tutto schermo: ${shot.title}, ${shot.place}">
-        <div class="shot-media h-full">${lbItemImg(shot, "w-full h-full block object-cover", true)}</div>
-        ${i === 0 ? `
-        <div class="ambient-headline reveal absolute inset-x-0 top-0 p-4 md:p-6">
-          <p class="t-lg font-display uppercase leading-[0.95]">Fuori, silenzio.<br/>Dentro, la musica.</p>
-          <p class="t-label text-paper/70 mt-3 max-w-[14rem]">Il punto segnato si accende solo in cuffia.</p>
-        </div>` : ""}
-        <div class="shot-meta absolute inset-x-0 bottom-0 p-4 md:p-5">
-          <p class="t-label text-paper/70">${shot.place}</p>
-          <p class="font-display uppercase text-2xl leading-none mt-2">${shot.title}</p>
-        </div>
-        <span class="shot-open t-label" aria-hidden="true">⤢</span>
-      </button>`
-    ).join("");
+  /* ---------- 05 · AMBIENT: una sola fotografia protagonista, colonna
+     fotografica separata dal testo — struttura ad array per poter
+     aggiungere altri materiali Ambient in futuro senza ricostruire la vista. ---------- */
+  const AMBIENT_CATEGORY = {
+    id: "ambient-toledo", num: "01", title: "Toledo — Installazione Ambient",
+    description: "All'uscita della stazione Toledo, una teca insonorizzata ospita un live: la musica si sente solo collegando le cuffie.",
+    type: "gallery",
+    items: [{ src: "assets/images/activation/toledo-ambient.jpg", title: "Toledo", caption: "L'installazione Ambient all'uscita della stazione Toledo: la musica dal vivo si sente solo in cuffia." }],
+  };
 
-    $("#activation-gallery").addEventListener("click", (e) => {
-      const tile = e.target.closest("[data-shot]");
-      if (tile) lbOpen(SHOTS, Number(tile.dataset.shot));
-    });
+  function initActivation() {
+    $("#activation-gallery").innerHTML = `
+      <button type="button" class="ambient-photo" aria-label="Apri a tutto schermo: fotografia dell'installazione Ambient a Toledo">
+        ${lbItemImg(AMBIENT_CATEGORY.items[0], "w-full h-full block object-cover", true)}
+        <span class="ambient-photo__open" aria-hidden="true">⤢</span>
+      </button>`;
+    $("#activation-gallery").addEventListener("click", () => dvOpen(AMBIENT_CATEGORY));
   }
 
   /* ---------- DECK: motore di navigazione a slide ---------- */
@@ -474,7 +588,7 @@
 
     document.addEventListener("keydown", (e) => {
       if (e.target.closest("input, textarea")) return;
-      if (document.body.classList.contains("lightbox-open")) return;
+      if (document.body.classList.contains("lightbox-open") || document.body.classList.contains("overlay-open")) return;
       if (["ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); goTo(current + 1); }
       else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); goTo(current - 1); }
       else if (e.key === "Home") { e.preventDefault(); goTo(0); }

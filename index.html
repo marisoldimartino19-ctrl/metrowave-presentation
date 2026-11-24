@@ -33,8 +33,8 @@
         <li><a href="#stazioni" data-nav data-goto-slide="stazioni" class="py-2 block hover:text-wred transition-colors">04 Stazioni</a></li>
         <li><a href="#ambient" data-nav data-goto-slide="ambient" class="py-2 block hover:text-wred transition-colors">05 Ambient</a></li>
         <li><a href="#promo" data-nav data-goto-slide="promo" class="py-2 block hover:text-wred transition-colors">06 Promo</a></li>
-        <li><a href="#flow-1" data-nav data-goto-slide="flow-1" class="py-2 block hover:text-wred transition-colors">07 User flow</a></li>
-        <li><a href="#ticket" data-nav data-goto-slide="ticket" class="py-2 block hover:text-wred transition-colors">08 Biglietto cartaceo</a></li>
+        <li><a href="#ticket" data-nav data-goto-slide="ticket" class="py-2 block hover:text-wred transition-colors">07 Biglietto cartaceo</a></li>
+        <li><a href="#flow-1" data-nav data-goto-slide="flow-1" class="py-2 block hover:text-wred transition-colors">08 User flow</a></li>
         <li><a href="#timetable" data-nav data-goto-slide="timetable" class="py-2 block hover:text-wred transition-colors">09 Timetable</a></li>
       </ul>
       <span class="shrink-0 font-mono tabular-nums" id="slide-counter" aria-live="polite">01 / 17</span>
@@ -254,10 +254,27 @@
         <div class="section-head grid grid-cols-12 gap-4 t-label">
           <span class="col-span-2">05</span>
           <span class="col-span-8">Ambient — la bolla di silenzio</span>
-          <span class="col-span-2 text-right">Clicca uno scatto</span>
+          <span class="col-span-2 text-right">Clicca la foto</span>
         </div>
 
-        <div class="flex-1 min-h-0 grid md:grid-cols-3 gap-px bg-paper/15 border border-paper/15" id="activation-gallery"></div>
+        <div class="flex-1 min-h-0 grid md:grid-cols-2 gap-6 md:gap-10 items-center">
+          <div class="ambient-text reveal flex flex-col gap-4 min-w-0">
+            <h2 class="t-h1 font-display uppercase leading-[0.95]">Fuori, silenzio.<br/>Dentro, la musica.</h2>
+            <p class="t-lead text-paper/70 max-w-[32ch]">Un'installazione urbana porta il festival nelle strade: l'ingresso in stazione diventa un'esperienza musicale dal vivo.</p>
+            <div class="ambient-meta flex items-center gap-5 mt-2">
+              <div>
+                <p class="t-label text-wred">Stazione</p>
+                <p class="font-display uppercase text-lg md:text-xl leading-none mt-1">Toledo</p>
+              </div>
+              <span class="ambient-meta__divider" aria-hidden="true"></span>
+              <div>
+                <p class="t-label text-wred">Attivazione</p>
+                <p class="font-display uppercase text-lg md:text-xl leading-none mt-1">Ambient</p>
+              </div>
+            </div>
+          </div>
+          <div class="ambient-media reveal h-full min-h-0" id="activation-gallery"></div>
+        </div>
       </div>
     </section>
 
@@ -277,45 +294,66 @@
             <p class="reveal t-lead lg:col-span-5">La campagna corre come una linea: ogni fermata avvicina Napoli alla notte del festival.</p>
           </div>
 
-          <div class="promo-showcase reveal">
-            <div class="promo-gallery" id="promo-gallery" role="group" aria-label="Materiali di campagna: poster print e affissioni, per stazione"></div>
-            <p class="t-label text-paper/40">Clicca un'anteprima per vederla a schermo intero · formati 70×100 cm e 6×3 m</p>
-          </div>
-
-          <ul class="promo-timeline grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
-            <li>
-              <p class="t-label text-paper/45">-6 settimane</p>
-              <p class="promo-steps__what font-display uppercase">Print</p>
-              <p class="t-body text-sm text-paper/60">Poster e materiali editoriali, uno per stazione.</p>
-            </li>
-            <li>
-              <p class="t-label text-paper/45">-3 settimane</p>
-              <p class="promo-steps__what font-display uppercase">Affissioni in metro</p>
-              <p class="t-body text-sm text-paper/60">Nelle banchine, ogni stazione annuncia il proprio genere.</p>
-            </li>
-            <li>
-              <p class="t-label text-paper/45">-1 settimana</p>
-              <p class="promo-steps__what font-display uppercase">Teaser TV</p>
-              <p class="t-body text-sm text-paper/60">Spot brevi in avvicinamento all'evento.</p>
-            </li>
-            <li class="promo-steps--accent">
-              <p class="t-label text-paper/45">La sera stessa</p>
-              <p class="promo-steps__what font-display uppercase">Pop-up Spotify</p>
-              <p class="t-body text-sm text-paper/60">Annunci e inviti direttamente nell'app.</p>
-            </li>
-          </ul>
+          <div class="promo-categories reveal grid md:grid-cols-3 gap-px bg-paper/15 border border-paper/15" id="promo-categories" role="group" aria-label="Categorie della campagna promozionale"></div>
+          <p class="t-label text-paper/40 reveal">Clicca una categoria per vederla a schermo intero</p>
         </div>
       </div>
     </section>
 
     <!-- =====================================================
-         07 · USER FLOW — biglietto via app Spotify + esperienza
-         interattiva durante l'evento (2 blocchi, non più 6 step)
+         07 · BIGLIETTO CARTACEO E DIGITALE — canale alternativo
+         all'app, a confronto diretto con il pass digitale
          ===================================================== -->
-    <section id="flow-1" data-section class="slide bg-abyss" aria-label="07 — User flow">
+    <section id="ticket" data-section class="slide bg-abyss" aria-label="07 — Biglietto cartaceo e digitale">
       <div class="slide-inner">
         <div class="section-head grid grid-cols-12 gap-4 t-label">
           <span class="col-span-2">07</span>
+          <span class="col-span-7">Biglietto cartaceo e digitale</span>
+          <span class="col-span-3 text-right opacity-50">Canale alternativo</span>
+        </div>
+
+        <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8">
+          <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+            <h2 class="reveal t-h1 t-h1--long font-display uppercase lg:col-span-7">Biglietto cartaceo e biglietto digitale</h2>
+            <p class="reveal t-lead lg:col-span-5">Lo stesso accesso di una notte, su due canali: il tagliando fisico per chi preferisce non scaricare nulla, il pass nell'app per chi vive tutto dallo smartphone.</p>
+          </div>
+
+          <div class="ticket-compare reveal">
+            <div class="ticket-compare__col">
+              <p class="t-label ticket-compare__label">Cartaceo</p>
+              <div class="ticket-showcase" id="ticket-showcase" role="group" aria-label="Biglietto cartaceo Metro Wave, fronte e retro"></div>
+            </div>
+            <div class="ticket-compare__divider" aria-hidden="true"></div>
+            <div class="ticket-compare__col">
+              <p class="t-label ticket-compare__label">Digitale</p>
+              <div class="ticket-showcase-digital" id="ticket-showcase-digital" role="group" aria-label="Biglietto digitale Metro Wave, Wave Pass nell'app Spotify"></div>
+            </div>
+          </div>
+
+          <div class="ticket-window grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 max-w-2xl">
+            <div>
+              <p class="t-label text-paper/45">Da 7 giorni prima</p>
+              <p class="promo-steps__what font-display uppercase">In vendita</p>
+              <p class="t-body text-sm text-paper/60">Disponibile alle biglietterie digitali, a ogni entrata della metro.</p>
+            </div>
+            <div class="promo-steps--accent">
+              <p class="t-label text-paper/45">Il giorno dell'evento</p>
+              <p class="promo-steps__what font-display uppercase">Non più acquistabile</p>
+              <p class="t-body text-sm text-paper/60">La notte del festival il tagliando cartaceo non è più in vendita: resta solo il pass digitale.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         08 · USER FLOW — biglietto via app Spotify + esperienza
+         interattiva durante l'evento (2 blocchi, non più 6 step)
+         ===================================================== -->
+    <section id="flow-1" data-section class="slide bg-abyss" aria-label="08 — User flow">
+      <div class="slide-inner">
+        <div class="section-head grid grid-cols-12 gap-4 t-label">
+          <span class="col-span-2">08</span>
           <span class="col-span-7">User flow</span>
           <span class="col-span-3 text-right opacity-50">Ipotesi progettuale</span>
         </div>
@@ -356,42 +394,6 @@
                   <p class="t-label text-paper/50 mt-2">Scansione in stazione</p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =====================================================
-         08 · BIGLIETTO CARTACEO — canale alternativo all'app,
-         sezione a sé: non va confuso con lo User Flow digitale
-         ===================================================== -->
-    <section id="ticket" data-section class="slide bg-abyss" aria-label="08 — Biglietto cartaceo">
-      <div class="slide-inner">
-        <div class="section-head grid grid-cols-12 gap-4 t-label">
-          <span class="col-span-2">08</span>
-          <span class="col-span-7">Biglietto cartaceo</span>
-          <span class="col-span-3 text-right opacity-50">Canale alternativo</span>
-        </div>
-
-        <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8">
-          <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
-            <h2 class="reveal t-h1 font-display uppercase lg:col-span-7">Anche senza l'app</h2>
-            <p class="reveal t-lead lg:col-span-5">Lo stesso accesso di una notte, in un tagliando fisico — per chi preferisce non scaricare nulla.</p>
-          </div>
-
-          <div class="ticket-showcase reveal" id="ticket-showcase" role="group" aria-label="Biglietto cartaceo Metro Wave, fronte e retro"></div>
-
-          <div class="ticket-window grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 max-w-2xl">
-            <div>
-              <p class="t-label text-paper/45">Da 7 giorni prima</p>
-              <p class="promo-steps__what font-display uppercase">In vendita</p>
-              <p class="t-body text-sm text-paper/60">Disponibile alle biglietterie digitali, a ogni entrata della metro.</p>
-            </div>
-            <div class="promo-steps--accent">
-              <p class="t-label text-paper/45">Il giorno dell'evento</p>
-              <p class="promo-steps__what font-display uppercase">Non più acquistabile</p>
-              <p class="t-body text-sm text-paper/60">La notte del festival il tagliando cartaceo non è più in vendita: resta solo il pass digitale.</p>
             </div>
           </div>
         </div>
@@ -505,6 +507,26 @@
     </figure>
     <button type="button" class="lightbox-nav lightbox-prev t-label" data-step="-1" aria-label="Scatto precedente">←</button>
     <button type="button" class="lightbox-nav lightbox-next t-label" data-step="1" aria-label="Scatto successivo">→</button>
+  </div>
+
+  <!-- VISTA DI APPROFONDIMENTO · categorie Promo e Ambient -->
+  <div class="detail-view" id="detail-view" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
+    <div class="detail-bar">
+      <span class="detail-bar__title">
+        <span class="t-label text-paper/45" id="detail-num"></span>
+        <span class="font-display uppercase" id="detail-title"></span>
+      </span>
+      <button type="button" class="lightbox-close" data-detail-close aria-label="Chiudi">Chiudi ✕ <span class="text-paper/50">Esc</span></button>
+    </div>
+    <div class="detail-stage-wrap">
+      <button type="button" class="lightbox-nav lightbox-prev t-label" data-detail-step="-1" aria-label="Elemento precedente" hidden>←</button>
+      <div class="detail-stage" id="detail-stage"></div>
+      <button type="button" class="lightbox-nav lightbox-next t-label" data-detail-step="1" aria-label="Elemento successivo" hidden>→</button>
+    </div>
+    <div class="detail-footer t-label">
+      <span id="detail-count"></span>
+      <span class="text-paper/70" id="detail-caption"></span>
+    </div>
   </div>
 
   <script src="assets/js/stations.js"></script>
