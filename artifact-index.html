@@ -1,0 +1,511 @@
+<title>METROWAVE — Linea 1 Night Festival</title>
+<meta name="description" content="METROWAVE: Spotify × ANM Campania × Comune di Napoli. La Linea 1 della metropolitana di Napoli diventa un festival musicale notturno e itinerante in 20 stazioni." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<script>
+  document.body.classList.add('grain', 'font-sans', 'overflow-hidden');
+</script>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="assets/js/tailwind-config.js"></script>
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  :root { color-scheme: dark; }
+</style>
+
+<div class="cursor" aria-hidden="true"></div>
+<div class="toast t-label" id="toast" role="status" aria-live="polite"></div>
+
+<!-- HEADER: indice + contatore slide -->
+<header class="fixed top-0 inset-x-0 z-40 h-14 bg-night/90 backdrop-blur-md border-b border-paper/10">
+  <nav class="h-full flex items-center gap-4 md:gap-6 px-4 md:px-8 t-label">
+    <a href="#hero" data-goto-slide="hero" class="flex items-center gap-2 font-bold shrink-0">
+      <span class="inline-flex items-center justify-center w-7 h-7 rounded bg-paper p-1 shrink-0"><img src="assets/logo/metro-wave-logo.png" alt="" class="w-full h-full object-contain" /></span>
+      MW/L1
+    </a>
+    <ul class="flex gap-4 lg:gap-7 overflow-x-auto whitespace-nowrap min-w-0 md:mx-auto" id="nav-links">
+      <li><a href="#insight" data-nav data-goto-slide="insight" class="py-2 block hover:text-wred transition-colors">01 Insight</a></li>
+      <li><a href="#concept" data-nav data-goto-slide="concept" class="py-2 block hover:text-wred transition-colors">02 Concept</a></li>
+      <li><a href="#palette" data-nav data-goto-slide="palette" class="py-2 block hover:text-wred transition-colors">03 Palette</a></li>
+      <li><a href="#stazioni" data-nav data-goto-slide="stazioni" class="py-2 block hover:text-wred transition-colors">04 Stazioni</a></li>
+      <li><a href="#ambient" data-nav data-goto-slide="ambient" class="py-2 block hover:text-wred transition-colors">05 Ambient</a></li>
+      <li><a href="#promo" data-nav data-goto-slide="promo" class="py-2 block hover:text-wred transition-colors">06 Promo</a></li>
+      <li><a href="#flow-1" data-nav data-goto-slide="flow-1" class="py-2 block hover:text-wred transition-colors">07 User flow</a></li>
+      <li><a href="#ticket" data-nav data-goto-slide="ticket" class="py-2 block hover:text-wred transition-colors">08 Biglietto cartaceo</a></li>
+      <li><a href="#timetable" data-nav data-goto-slide="timetable" class="py-2 block hover:text-wred transition-colors">09 Timetable</a></li>
+    </ul>
+    <span class="shrink-0 font-mono tabular-nums" id="slide-counter" aria-live="polite">01 / 17</span>
+  </nav>
+  <div class="absolute left-0 bottom-0 h-0.5 bg-wred" id="progress" style="width:0%"></div>
+</header>
+
+<!-- DECK: ogni .slide è una schermata a sé -->
+<main id="deck" class="deck">
+
+  <!-- =====================================================
+       00 · COVER
+       ===================================================== -->
+  <section id="hero" data-section class="slide bg-night overflow-hidden" aria-label="Cover — Metro Wave">
+    <div class="hero-field" id="hero-field" aria-hidden="true"></div>
+    <div class="slide-inner relative z-10">
+      <span class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-lg bg-paper p-2 shrink-0"><img src="assets/logo/metro-wave-logo.png" alt="Metro Wave" class="w-full h-full object-contain" /></span>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 border-y border-paper/15 py-2 t-label">
+        <span>Spotify</span>
+        <span>× ANM Campania</span>
+        <span>× Comune di Napoli</span>
+        <span class="md:text-right"><span class="text-wred">●</span> Live <span id="clock">00:00</span> NA</span>
+      </div>
+
+      <h1 class="hero-title font-display uppercase select-none hero-idle" id="hero-title" aria-label="Metro Wave">
+        <span class="hero-word block" data-split aria-hidden="true">METRO</span>
+        <span class="hero-word block text-right" data-split data-outline aria-hidden="true">WAVE</span>
+      </h1>
+
+      <p class="claim t-label text-paper/70">20 stazioni. 20 generi. Una notte.</p>
+
+      <div class="marquee bg-wred text-night font-display uppercase text-xl md:text-3xl border-y-2 border-night -mx-4 md:-mx-8" id="marquee-genres"></div>
+
+      <div class="hero-manifesto">
+        <p class="hero-manifesto__lead">La Linea 1 chiude al pubblico. E apre il primo festival che si vive <span class="bg-wred text-night px-1">in movimento</span>.</p>
+        <div class="hero-manifesto__stats">
+          <span><strong>20</strong>stazioni</span>
+          <span><strong>20</strong>generi</span>
+          <span class="text-wred"><strong>00:00—05:00</strong></span>
+        </div>
+      </div>
+
+      <div class="mt-auto pt-2 flex items-center gap-4">
+        <span class="t-label shrink-0">L1</span>
+        <div class="relative flex-1 h-px bg-paper/30">
+          <div class="absolute inset-0 flex justify-between items-center" id="hero-line"></div>
+        </div>
+        <button type="button" data-goto-slide="insight" class="t-label shrink-0 hover:text-wred">Inizia →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       01 · INSIGHT
+       ===================================================== -->
+  <section id="insight" data-section class="slide bg-night" aria-label="01 — Insight">
+    <div class="slide-inner relative z-10">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">01</span>
+        <span class="col-span-10">Insight</span>
+      </div>
+
+      <div class="flex-1 min-h-0 flex flex-col justify-center">
+        <p class="insight-line insight-line--a font-display uppercase">Stessa playlist.</p>
+        <p class="insight-line insight-line--b font-display uppercase"><span class="hl-block bg-wred text-night">Stesso genere.</span></p>
+        <p class="insight-line insight-line--c font-display uppercase">Stesso tragitto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       02 · CONCEPT & IDEA
+       ===================================================== -->
+  <section id="concept" data-section class="slide bg-abyss" aria-label="02 — Concept, l'idea">
+    <div class="slide-inner relative z-10">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">02</span>
+        <span class="col-span-7">Concept</span>
+        <span class="col-span-3 text-right">01 / 02</span>
+      </div>
+
+      <div class="concept-stops" id="concept-stops" aria-hidden="true"></div>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8 relative z-10">
+        <h2 class="reveal t-h1 font-display uppercase max-w-5xl">
+          E se la metro non fosse il mezzo, ma <span class="hl-block bg-wred text-abyss">l&apos;evento?</span>
+        </h2>
+        <p class="reveal t-lead max-w-xl">Venti fermate diventano venti palchi: si esce dalle cuffie e si vive la musica insieme, fermata dopo fermata.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       02b · CONCEPT — COME FUNZIONA (schema sempre visibile)
+       ===================================================== -->
+  <section id="concept-2" data-section class="slide bg-abyss" aria-label="02 — Concept, come funziona">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">02</span>
+        <span class="col-span-7">Concept</span>
+        <span class="col-span-3 text-right">02 / 02</span>
+      </div>
+
+      <div class="flex-1 min-h-0 flex flex-col justify-start gap-6 md:gap-8">
+        <h2 class="t-h2 font-display uppercase">Come funziona</h2>
+
+        <div class="confronto-legend t-label" aria-hidden="true">
+          <span>Festival tradizionale</span>
+          <span class="text-spotify">Metrowave</span>
+        </div>
+        <ul class="confronto">
+          <li class="confronto-row">
+            <p class="confronto-row__label t-label">Palco</p>
+            <div class="confronto-row__track">
+              <span class="confronto-row__old">Unico, centrale</span>
+              <span class="confronto-row__new">Diffuso in 20 stazioni + vagoni</span>
+            </div>
+          </li>
+          <li class="confronto-row">
+            <p class="confronto-row__label t-label">Pubblico</p>
+            <div class="confronto-row__track">
+              <span class="confronto-row__old">Statico</span>
+              <span class="confronto-row__new">In movimento</span>
+            </div>
+          </li>
+          <li class="confronto-row">
+            <p class="confronto-row__label t-label">Scoperta</p>
+            <div class="confronto-row__track">
+              <span class="confronto-row__old">Line-up scelta a priori</span>
+              <span class="confronto-row__new">Per fermata, anche per caso</span>
+            </div>
+          </li>
+          <li class="confronto-row">
+            <p class="confronto-row__label t-label">Spazio</p>
+            <div class="confronto-row__track">
+              <span class="confronto-row__old">Area recintata</span>
+              <span class="confronto-row__new">Infrastruttura urbana</span>
+            </div>
+          </li>
+          <li class="confronto-row">
+            <p class="confronto-row__label t-label">Orario</p>
+            <div class="confronto-row__track">
+              <span class="confronto-row__old">Serale</span>
+              <span class="confronto-row__new">Notturno, dopo la chiusura</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       03 · SISTEMA CROMATICO
+       ===================================================== -->
+  <section id="palette" data-section class="slide bg-abyss" aria-label="03 — Palette cromatica">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">03</span>
+        <span class="col-span-10">Palette</span>
+      </div>
+
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-4 md:gap-5">
+        <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+          <h2 class="reveal t-h1 font-display uppercase lg:col-span-7">Tre colori.<br/>Venti stazioni.</h2>
+          <p class="reveal t-lead lg:col-span-5">Il verde Spotify, il bianco e il nero restano la firma; ogni stazione aggiunge il colore del proprio genere.</p>
+        </div>
+
+        <div class="palette-primary reveal flex gap-px bg-paper/15 border border-paper/15" id="palette-primary" role="group" aria-label="Palette primaria Spotify"></div>
+
+        <div class="palette-spectrum reveal flex gap-px bg-paper/15 border border-paper/15" id="palette-spectrum" role="group" aria-label="Palette delle 20 stazioni, in ordine di linea"></div>
+
+        <p class="t-label opacity-50 text-right pr-24 md:pr-28">Da Piscinola a Centro Direzionale · clicca un colore per copiarlo</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       04 · LE 20 STAZIONI (01/02 — stazioni 01–10)
+       ===================================================== -->
+  <section id="stazioni" data-section class="slide bg-night" aria-label="04 — Le 20 stazioni, 01 di 10">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">04</span>
+        <span class="col-span-7">Stazioni</span>
+        <span class="col-span-3 text-right">01 / 02</span>
+      </div>
+
+      <div class="flex items-end justify-between gap-6 mb-4 md:mb-6">
+        <h2 class="t-kicker font-display uppercase">20 stazioni. 20 generi.</h2>
+        <p class="t-label text-paper/50 text-right shrink-0">Da Piscinola<br/>a Centro Direzionale</p>
+      </div>
+
+      <div class="flex-1 min-h-0 grid grid-cols-5 grid-rows-2 gap-px bg-paper/15 border border-paper/15" id="stations-grid"></div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       04 · LE 20 STAZIONI (02/02 — stazioni 11–20)
+       ===================================================== -->
+  <section id="stazioni-2" data-section class="slide bg-night" aria-label="04 — Le 20 stazioni, 02 di 10">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">04</span>
+        <span class="col-span-7">Stazioni</span>
+        <span class="col-span-3 text-right">02 / 02</span>
+      </div>
+
+      <div class="flex-1 min-h-0 grid grid-cols-5 grid-rows-2 gap-px bg-paper/15 border border-paper/15 mt-2" id="stations-grid-2"></div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       05 · AMBIENT — sezione autonoma, editoriale con foto grandi
+       ===================================================== -->
+  <section id="ambient" data-section class="slide bg-night" aria-label="05 — Ambient, la bolla di silenzio">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">05</span>
+        <span class="col-span-8">Ambient — la bolla di silenzio</span>
+        <span class="col-span-2 text-right">Clicca uno scatto</span>
+      </div>
+
+      <div class="flex-1 min-h-0 grid md:grid-cols-3 gap-px bg-paper/15 border border-paper/15" id="activation-gallery"></div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       06 · PROMOZIONE (solo comunicazione promozionale)
+       ===================================================== -->
+  <section id="promo" data-section class="slide bg-abyss" aria-label="06 — Promozione">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">06</span>
+        <span class="col-span-10">Promozione</span>
+      </div>
+
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8">
+        <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+          <h2 class="reveal t-h1 font-display uppercase lg:col-span-7">Prima della notte</h2>
+          <p class="reveal t-lead lg:col-span-5">La campagna corre come una linea: ogni fermata avvicina Napoli alla notte del festival.</p>
+        </div>
+
+        <div class="promo-showcase reveal">
+          <div class="promo-gallery" id="promo-gallery" role="group" aria-label="Materiali di campagna: poster print e affissioni, per stazione"></div>
+          <p class="t-label text-paper/40">Clicca un'anteprima per vederla a schermo intero · formati 70×100 cm e 6×3 m</p>
+        </div>
+
+        <ul class="promo-timeline grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4">
+          <li>
+            <p class="t-label text-paper/45">-6 settimane</p>
+            <p class="promo-steps__what font-display uppercase">Print</p>
+            <p class="t-body text-sm text-paper/60">Poster e materiali editoriali, uno per stazione.</p>
+          </li>
+          <li>
+            <p class="t-label text-paper/45">-3 settimane</p>
+            <p class="promo-steps__what font-display uppercase">Affissioni in metro</p>
+            <p class="t-body text-sm text-paper/60">Nelle banchine, ogni stazione annuncia il proprio genere.</p>
+          </li>
+          <li>
+            <p class="t-label text-paper/45">-1 settimana</p>
+            <p class="promo-steps__what font-display uppercase">Teaser TV</p>
+            <p class="t-body text-sm text-paper/60">Spot brevi in avvicinamento all'evento.</p>
+          </li>
+          <li class="promo-steps--accent">
+            <p class="t-label text-paper/45">La sera stessa</p>
+            <p class="promo-steps__what font-display uppercase">Pop-up Spotify</p>
+            <p class="t-body text-sm text-paper/60">Annunci e inviti direttamente nell'app.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       07 · USER FLOW — biglietto via app Spotify + esperienza
+       interattiva durante l'evento (2 blocchi, non più 6 step)
+       ===================================================== -->
+  <section id="flow-1" data-section class="slide bg-abyss" aria-label="07 — User flow">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">07</span>
+        <span class="col-span-7">User flow</span>
+        <span class="col-span-3 text-right opacity-50">Ipotesi progettuale</span>
+      </div>
+      <div class="flex-1 min-h-0 grid md:grid-cols-2 gap-px bg-paper/15 border border-paper/15">
+        <div class="bg-abyss p-6 md:p-8 flex flex-col gap-4 min-h-0">
+          <div>
+            <span class="t-label text-spotify">Prima della notte</span>
+            <h2 class="t-lg font-display uppercase mt-1">Il biglietto,<br/>nell'app Spotify</h2>
+          </div>
+          <p class="t-lead">Un pass digitale per la Linea 1, pronto in pochi tocchi.</p>
+          <div class="flow-visual has-content flex-1 min-h-0">
+            <div class="flow-ticket">
+              <div class="flow-ticket__main">
+                <p class="t-label text-paper/50">Metro Wave · Biglietto digitale</p>
+                <p class="font-display uppercase text-3xl md:text-4xl mt-2 leading-none">Linea 1<br/>Tutta la notte</p>
+              </div>
+              <div class="flow-ticket__stub" id="flow-qr-ticket"></div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-abyss p-6 md:p-8 flex flex-col gap-4 min-h-0">
+          <div>
+            <span class="t-label text-spotify">La notte del festival</span>
+            <h2 class="t-lg font-display uppercase mt-1">In stazione,<br/>si accende il percorso</h2>
+          </div>
+          <p class="t-lead">Una scansione a ogni fermata, per seguire la propria tappa sulla mappa.</p>
+          <div class="flow-visual has-content flex-1 min-h-0">
+            <div class="flow-route">
+              <svg viewBox="0 0 400 140" class="flow-route__svg" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+                <polyline points="16,120 148,86 268,54 384,18" fill="none" stroke="var(--paper)" stroke-opacity=".3" stroke-width="2"/>
+                <circle cx="16" cy="120" r="6" fill="var(--paper)" opacity=".55"/>
+                <circle cx="148" cy="86" r="6" fill="var(--paper)" opacity=".55"/>
+                <circle cx="268" cy="54" r="8" fill="var(--red)" class="flow-route__pulse"/>
+                <circle cx="384" cy="18" r="6" fill="var(--paper)" opacity=".55"/>
+              </svg>
+              <div class="flow-route__scan">
+                <div id="flow-qr-stazione"></div>
+                <p class="t-label text-paper/50 mt-2">Scansione in stazione</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       08 · BIGLIETTO CARTACEO — canale alternativo all'app,
+       sezione a sé: non va confuso con lo User Flow digitale
+       ===================================================== -->
+  <section id="ticket" data-section class="slide bg-abyss" aria-label="08 — Biglietto cartaceo">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">08</span>
+        <span class="col-span-7">Biglietto cartaceo</span>
+        <span class="col-span-3 text-right opacity-50">Canale alternativo</span>
+      </div>
+
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8">
+        <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+          <h2 class="reveal t-h1 font-display uppercase lg:col-span-7">Anche senza l'app</h2>
+          <p class="reveal t-lead lg:col-span-5">Lo stesso accesso di una notte, in un tagliando fisico — per chi preferisce non scaricare nulla.</p>
+        </div>
+
+        <div class="ticket-showcase reveal" id="ticket-showcase" role="group" aria-label="Biglietto cartaceo Metro Wave, fronte e retro"></div>
+
+        <div class="ticket-window grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 max-w-2xl">
+          <div>
+            <p class="t-label text-paper/45">Da 7 giorni prima</p>
+            <p class="promo-steps__what font-display uppercase">In vendita</p>
+            <p class="t-body text-sm text-paper/60">Disponibile alle biglietterie digitali, a ogni entrata della metro.</p>
+          </div>
+          <div class="promo-steps--accent">
+            <p class="t-label text-paper/45">Il giorno dell'evento</p>
+            <p class="promo-steps__what font-display uppercase">Non più acquistabile</p>
+            <p class="t-body text-sm text-paper/60">La notte del festival il tagliando cartaceo non è più in vendita: resta solo il pass digitale.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       09 · TIMETABLE & SPOTIFY EXPERIENCE
+       ===================================================== -->
+  <section id="timetable" data-section class="slide bg-night" aria-label="09 — Timetable, 1 di 2">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">09</span>
+        <span class="col-span-7">Timetable</span>
+        <span class="col-span-3 text-right">01 / 02</span>
+      </div>
+
+      <div class="tt-stack flex-1 min-h-0 flex flex-col">
+        <div>
+          <h2 class="reveal t-lg font-display uppercase">Tabella di marcia</h2>
+          <p class="t-label text-paper/40 mt-1">Simulazione progettuale · orari e frequenze non ufficiali, da confermare con ANM</p>
+        </div>
+
+        <div class="grid md:grid-cols-12 gap-px bg-paper/15 border border-paper/15">
+          <div class="tt-panel md:col-span-3 bg-wred text-night">
+            <p class="t-label">Ora</p>
+            <p class="tt-panel__value font-display leading-none mt-1" id="tt-time">01:00</p>
+          </div>
+          <div class="tt-panel md:col-span-6 bg-night flex flex-col justify-center gap-2">
+            <label for="tt-scrubber" class="t-label text-paper/50">Scorri la notte</label>
+            <input id="tt-scrubber" class="scrubber w-full" type="range" min="0" max="299" step="1" value="60" />
+            <div class="flex justify-between font-mono text-[11px] text-paper/50"><span>00:00</span><span>01:30</span><span>03:30</span><span>05:00</span></div>
+          </div>
+          <div class="tt-panel md:col-span-3 bg-night">
+            <p class="t-label text-paper/50">Frequenza ANM</p>
+            <p class="tt-panel__value font-display leading-none mt-1">ogni <span id="tt-headway">6</span>′</p>
+            <p class="text-xs text-paper/60 mt-1" id="tt-headway-note"></p>
+          </div>
+        </div>
+        <div class="timetable-scroll flex-1 min-h-0 overflow-x-auto border-x border-b border-paper/15">
+          <table class="w-full min-w-[720px] text-left border-collapse" id="timetable-table"></table>
+        </div>
+        <p class="t-label text-paper/40">Line-up in definizione · artisti TBA</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       08b · SPOTIFY EXPERIENCE (slide propria, non più in coda
+       alla tabella di marcia)
+       ===================================================== -->
+  <section id="timetable-2" data-section class="slide bg-spotify text-night" aria-label="09 — Timetable, 2 di 2">
+    <div class="slide-inner">
+      <div class="section-head grid grid-cols-12 gap-4 t-label">
+        <span class="col-span-2">09</span>
+        <span class="col-span-7">Timetable</span>
+        <span class="col-span-3 text-right">02 / 02</span>
+      </div>
+      <div class="flex-1 min-h-0 flex flex-col justify-center gap-6 md:gap-8">
+        <div class="grid lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+          <h2 class="reveal t-h1 font-display uppercase lg:col-span-7">Spotify experience</h2>
+          <p class="reveal t-lead lg:col-span-5">L'ecosistema digitale accompagna il passeggero prima, durante e dopo la notte.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-px bg-night/30 border border-night/30">
+          <div class="info-box bg-spotify"><p class="font-display text-2xl leading-none">Prima</p><div><p class="font-bold">Biglietto & quiz</p><p class="text-sm leading-snug mt-1">Quiz sui gusti: stazione più vicina e sfida fuori comfort zone.</p></div></div>
+          <div class="info-box bg-spotify"><p class="font-display text-2xl leading-none">A bordo</p><div><p class="font-bold">Mappa live</p><p class="text-sm leading-snug mt-1">La mappa guida il percorso e annuncia i live set nei vagoni.</p></div></div>
+          <div class="info-box bg-spotify"><p class="font-display text-2xl leading-none">In stazione</p><div><p class="font-bold">QR & playlist</p><p class="text-sm leading-snug mt-1">Ogni scansione illumina la tappa e sblocca la playlist del genere.</p></div></div>
+          <div class="info-box bg-night text-spotify"><p class="font-display text-2xl leading-none">Dopo</p><div><p class="font-bold text-paper">Punti & gadget</p><p class="text-sm leading-snug mt-1 text-paper/70">I punti si convertono in gadget: poster, sticker, vinili, CD.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       CHIUSURA
+       ===================================================== -->
+  <section id="closing" data-section class="slide bg-wred text-night" aria-label="Chiusura — Metro Wave">
+    <div class="slide-inner slide-inner--center items-center text-center">
+      <p class="font-display uppercase leading-[0.82] text-[clamp(3.5rem,13vw,13rem)]">Fuori dalle<br/>cuffie</p>
+      <p class="t-label mt-6">20 stazioni. 20 generi. Una notte.</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 border-t-2 border-night pt-4 mt-10 t-label w-full max-w-4xl mx-auto text-left">
+        <span>Metrowave · L1 Napoli</span>
+        <span>Spotify × ANM × Comune di Napoli</span>
+        <span>Progetto di design & eventi</span>
+        <span class="md:text-right">© 2026</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- CONTROLLI DI NAVIGAZIONE: frecce sempre visibili -->
+<div class="deck-nav" aria-hidden="false">
+  <button type="button" id="nav-prev" class="deck-nav-btn" aria-label="Slide precedente">←</button>
+  <button type="button" id="nav-next" class="deck-nav-btn" aria-label="Slide successiva">→</button>
+</div>
+
+<!-- LIGHTBOX · galleria ambient activation -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" hidden>
+  <div class="lightbox-bar t-label">
+    <span id="lightbox-count"></span>
+    <button type="button" class="lightbox-close" data-close aria-label="Chiudi">Chiudi ✕ <span class="text-paper/50">Esc</span></button>
+  </div>
+  <figure class="lightbox-stage">
+    <div class="lightbox-media" id="lightbox-media"></div>
+    <figcaption class="lightbox-caption">
+      <p class="t-label text-wred" id="lightbox-place"></p>
+      <p class="t-md font-display uppercase mt-2" id="lightbox-title"></p>
+      <p class="t-body text-paper/70 mt-3 max-w-xl" id="lightbox-text"></p>
+    </figcaption>
+  </figure>
+  <button type="button" class="lightbox-nav lightbox-prev t-label" data-step="-1" aria-label="Scatto precedente">←</button>
+  <button type="button" class="lightbox-nav lightbox-next t-label" data-step="1" aria-label="Scatto successivo">→</button>
+</div>
+
+<script src="assets/js/stations.js"></script>
+<script src="assets/js/symbols.js"></script>
+<script src="assets/js/main.js"></script>

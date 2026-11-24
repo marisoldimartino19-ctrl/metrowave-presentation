@@ -7,7 +7,6 @@
   --abyss: #0a0f2e;
   --paper: #f2efe8;
   --red: #ff2d1f;
-  --orange: #ff6a00;
   --spotify: #1ed760;
   --line: rgba(242, 239, 232, 0.14);
 }
@@ -40,6 +39,7 @@ html, body { height: 100%; overscroll-behavior: none; }
 .slide {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -67,20 +67,6 @@ html, body { height: 100%; overscroll-behavior: none; }
 }
 .slide-inner--center { justify-content: center; }
 
-/* Spazio con contenuto che può eccedere il viewport (tabelle, gallerie):
-   scorre internamente, senza mai cambiare slide da solo. */
-.slide-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: var(--block-gap);
-  padding-right: 4px;
-}
-.slide-scroll::-webkit-scrollbar { width: 6px; }
-.slide-scroll::-webkit-scrollbar-thumb { background: var(--line); }
-
 .section-head {
   padding-bottom: .75rem;
   border-bottom: 1px solid var(--line);
@@ -101,16 +87,44 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-vis
   outline: 2px solid var(--spotify); outline-offset: 2px;
 }
 
-/* ---------- USER FLOW: 7 slide ---------- */
-.flow-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
-.flow-num { font-family: "Outfit", sans-serif; font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; font-size: clamp(3rem, 8vw, 6rem); line-height: .85; color: var(--spotify); }
-.flow-visual {
-  flex: 1; min-height: 0; border: 1.5px dashed rgba(242, 239, 232, .35); border-radius: 2px;
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  padding: clamp(1.5rem, 4vw, 3rem); background: rgba(242, 239, 232, .025);
+/* ---------- USER FLOW: biglietto via app Spotify + esperienza interattiva ---------- */
+.flow-visual { flex: 1; min-height: 0; display: flex; align-items: stretch; justify-content: center; }
+
+/* Biglietto digitale: tagliando con pattern QR nello stub */
+.flow-ticket { width: 100%; height: 100%; max-height: clamp(18rem, 56svh, 30rem); display: flex; border: 1.5px solid rgba(242, 239, 232, .3); }
+.flow-ticket__main { flex: 1; padding: clamp(1.25rem, 3vw, 2.25rem); display: flex; flex-direction: column; justify-content: center; }
+.flow-ticket__stub {
+  flex: 0 0 clamp(9rem, 18vw, 12rem); display: flex; align-items: center; justify-content: center;
+  border-left: 1.5px dashed rgba(242, 239, 232, .3); padding: 1.5rem;
 }
-.flow-visual p { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: rgba(242, 239, 232, .45); max-width: 30ch; }
-.flow-visual.has-demo { background: none; border-style: solid; padding: clamp(1rem, 3vw, 2rem); }
+.flow-qr { display: grid; grid-template-columns: repeat(var(--qr-n), 1fr); gap: 2px; width: clamp(5rem, 11vw, 7rem); aspect-ratio: 1; }
+.flow-qr span { background: rgba(242, 239, 232, .12); }
+.flow-qr span.is-on { background: var(--paper); }
+
+/* Mappa + QR in stazione: tratta di linea che sale verso la fermata evidenziata */
+.flow-route { width: 100%; height: 100%; max-height: clamp(18rem, 56svh, 30rem); display: flex; align-items: center; gap: clamp(1.5rem, 4vw, 3rem); }
+.flow-route__svg { flex: 1; height: 100%; }
+.flow-route__pulse { animation: pulse-node 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes pulse-node { 0% { r: 8; opacity: 1; } 100% { r: 20; opacity: 0; } }
+.flow-route__scan { flex: 0 0 auto; text-align: center; }
+.flow-route__scan .flow-qr { margin: 0 auto; }
+
+/* ---------- 08 · BIGLIETTO CARTACEO: slide a sé, fronte e retro in grande ---------- */
+.ticket-showcase { flex: 0 0 auto; display: flex; align-items: flex-end; gap: clamp(1.25rem, 3vw, 2.5rem); }
+.ticket-big {
+  position: relative; display: block; overflow: hidden; cursor: zoom-in;
+  height: clamp(14rem, 50svh, 26rem);
+  border: 1.5px solid rgba(242, 239, 232, .3); background: var(--night);
+  box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.35);
+}
+.ticket-big--fronte, .ticket-big--retro { aspect-ratio: 359 / 568; }
+.ticket-big img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.ticket-big:hover img, .ticket-big:focus-visible img { transform: scale(1.03); }
+.ticket-big:focus-visible { outline: 2px solid var(--paper); outline-offset: -2px; }
+.ticket-big__tag {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: .6rem .85rem;
+  background: linear-gradient(to top, rgba(7,7,12,.92) 40%, rgba(7,7,12,0));
+}
 
 /* ---------- SISTEMA TIPOGRAFICO DEFINITIVO ----------
    Tre famiglie, ruoli fissi, pesi espliciti (Outfit non ha un
@@ -148,21 +162,46 @@ a:focus-visible, button:focus-visible, [tabindex]:focus-visible, input:focus-vis
    (non un semplice colore di testo: un vero blocco di peso). */
 .hl-block { display: inline-block; padding: 0 .14em; line-height: .92; }
 
-/* Numero fantasma: stessa tecnica outline della cover (vedi
-   .hero-letter.outline), riusata in scala ridotta come ancora
-   grafica nelle slide testuali/narrative a basso contenuto visivo.
-   Puro elemento tipografico esistente, non un simbolo nuovo. */
-.ghost-num {
-  position: absolute;
-  z-index: 0;
-  font-family: "Outfit", sans-serif;
-  font-weight: 900;
-  line-height: .8;
-  color: transparent;
-  -webkit-text-stroke: 1.5px rgba(242, 239, 232, .14);
-  pointer-events: none;
-  user-select: none;
+/* Insight: composizione puramente tipografica, tre righe a scala e
+   allineamento diversi invece di un blocco titolo uniforme — stesso
+   principio del poster Medaglie d'Oro (scala variabile, non un paragrafo
+   a compensare lo spazio). */
+.insight-line { font-family: "Outfit", sans-serif; font-weight: 900; line-height: .86; letter-spacing: -.01em; }
+.insight-line--a { font-size: clamp(2.2rem, 9svh, 6.5rem); color: var(--paper); opacity: .82; }
+.insight-line--b { font-size: clamp(3.4rem, 15svh, 11rem); margin-left: auto; margin-block: clamp(.5rem, 2.2svh, 1.5rem); text-align: right; }
+.insight-line--c { font-size: clamp(2rem, 7svh, 5rem); opacity: .7; }
+
+/* Concept: simboli originali delle stazioni (non una forma nuova) come
+   geometria di sfondo dietro la headline — alcuni tagliati dal bordo
+   della slide (lo stesso .overflow-hidden del deck fa il ritaglio). */
+.concept-stops { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.concept-stops .symbol { position: absolute; color: var(--paper); }
+.concept-stops .symbol:nth-of-type(1) { width: clamp(10rem, 24vw, 20rem); height: clamp(10rem, 24vw, 20rem); right: -5%; top: -6%; opacity: .08; }
+.concept-stops .symbol:nth-of-type(2) { width: clamp(6rem, 15vw, 12rem); height: clamp(6rem, 15vw, 12rem); right: 22%; bottom: -8%; opacity: .07; }
+.concept-stops .symbol:nth-of-type(3) { width: clamp(5rem, 12vw, 9rem); height: clamp(5rem, 12vw, 9rem); left: -3%; bottom: 8%; opacity: .07; }
+.concept-stops .symbol:nth-of-type(4) { width: clamp(4rem, 9vw, 7rem); height: clamp(4rem, 9vw, 7rem); left: 32%; top: 4%; opacity: .06; }
+
+/* Concept — Come funziona: confronto a barre, non una tabella aziendale.
+   Ogni riga è una fascia spezzata 30/70 — lo stesso principio a bande
+   usato in Palette e nella marquee della Cover, non una forma nuova. */
+.confronto-legend { display: flex; opacity: .55; }
+.confronto-legend span:first-child { flex: 0 0 30%; }
+.confronto-legend span:last-child { flex: 1; opacity: 1; }
+.confronto { display: flex; flex-direction: column; gap: clamp(.8rem, 2svh, 1.3rem); }
+.confronto-row__label { margin-bottom: .4rem; opacity: .5; }
+.confronto-row__track { display: flex; align-items: stretch; min-height: clamp(2.6rem, 6svh, 3.6rem); background: rgba(242, 239, 232, .05); }
+.confronto-row__old {
+  flex: 0 0 30%; display: flex; align-items: center; min-width: 0;
+  padding-inline: clamp(.75rem, 1.5vw, 1.25rem); border-right: 1px solid var(--line);
+  color: var(--paper); opacity: .45; font-size: clamp(.95rem, 1.3vw, 1.15rem);
 }
+.confronto-row__new {
+  flex: 1; display: flex; align-items: center; min-width: 0;
+  padding-inline: clamp(1rem, 1.8vw, 1.5rem); border-left: 3px solid var(--spotify);
+  background: color-mix(in srgb, var(--spotify) 12%, transparent);
+  font-weight: 700; font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+}
+
 .t-md   { font-size: clamp(1.6rem, 2.4vw, 2.5rem); line-height: .95; }
 .t-lead { font-size: clamp(1.125rem, 1.45vw, 1.5rem); line-height: 1.4; max-width: 38ch; }
 .t-body { font-size: 1rem; line-height: 1.6; max-width: 60ch; }
@@ -236,10 +275,32 @@ body {
   50% { transform: scaleY(1.12); }
 }
 
+/* Cover: campo di simboli originali delle stazioni, bassissima opacità,
+   alcuni tagliati dal bordo (.overflow-hidden su #hero) — collega METRO
+   e WAVE in un'unica composizione invece di lasciarli due blocchi di
+   testo separati. Nessuna stazione in particolare: sono tre forme
+   diverse, non il simbolo universale del festival. */
+.hero-field { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.hero-field .symbol { position: absolute; color: var(--paper); }
+.hero-field .symbol:nth-of-type(1) { width: clamp(16rem, 34vw, 30rem); height: clamp(16rem, 34vw, 30rem); right: -8%; top: 8%; opacity: .07; }
+.hero-field .symbol:nth-of-type(2) { width: clamp(6rem, 13vw, 10rem); height: clamp(6rem, 13vw, 10rem); left: 48%; bottom: 14%; opacity: .05; }
+.hero-field .symbol:nth-of-type(3) { width: clamp(5rem, 10vw, 8rem); height: clamp(5rem, 10vw, 8rem); right: 28%; top: -5%; opacity: .06; }
+
+/* Cover: manifesto + dati chiave come riga tipografica unica, non più
+   pannelli bordati in griglia (aspetto "dashboard"). */
+.hero-manifesto { display: flex; flex-direction: column; gap: clamp(.6rem, 1.8svh, 1.1rem); }
+.hero-manifesto__lead { font-size: clamp(1rem, 1.6vw, 1.35rem); font-weight: 700; line-height: 1.3; max-width: 46ch; }
+.hero-manifesto__stats {
+  display: flex; flex-wrap: wrap; gap: clamp(1rem, 3vw, 2.25rem);
+  font-family: "JetBrains Mono", monospace; font-size: clamp(.72rem, 1vw, .88rem);
+  text-transform: uppercase; letter-spacing: .08em; opacity: .85;
+}
+.hero-manifesto__stats strong { font-weight: 900; font-size: 1.4em; margin-right: .35em; font-family: "Outfit", sans-serif; opacity: 1; }
+.hero-manifesto__stats .text-wred strong { color: var(--red); }
+
 /* ---------- MARQUEE ---------- */
-.marquee { overflow: hidden; white-space: nowrap; }
+.marquee { overflow: hidden; white-space: nowrap; padding-block: clamp(.25rem, 1.2vh, .5rem); }
 .marquee__track { display: inline-flex; animation: marquee 28s linear infinite; }
-.marquee--reverse .marquee__track { animation-direction: reverse; }
 .marquee:hover .marquee__track { animation-play-state: paused; }
 @keyframes marquee { to { transform: translateX(-50%); } }
 
@@ -249,13 +310,26 @@ body {
   --ink: var(--night);
   transition: background 0.35s, color 0.35s;
 }
-/* Griglia 5x2 (10 stazioni/slide): dimensioni in svh, non in breakpoint di
-   larghezza, così la card si adatta sia a 1920x1080 sia a 1366x768 senza
-   mai tagliare contenuto né richiedere scroll. */
-.station-card--grid { padding: clamp(.55rem, 1.6svh, 1.1rem); gap: clamp(.35rem, 1svh, .9rem); }
-.station-card--num { font-size: clamp(1.15rem, 3svh, 1.9rem); }
-.station-card--symbol { width: clamp(3.6rem, 11svh, 7.5rem); height: clamp(3.6rem, 11svh, 7.5rem); }
-.station-card--name { font-size: clamp(.85rem, 2svh, 1.2rem); }
+/* Griglia uniforme 5x2 (10 stazioni/slide, stesso ordine del DOM): ogni cella
+   ha lo stesso peso visivo, in `fr` mai in px fissi, così riempie sempre
+   esattamente lo spazio disponibile, senza scroll, sia a 1920x1080 sia a
+   1366x768. container-type:size rende il simbolo proporzionale alla CELLA
+   (cqmin) e non al solo viewport, per restare grande e leggibile a qualunque
+   risoluzione — protagonista in ogni card, non una iconcina decorativa. */
+.station-card--grid {
+  container-type: size;
+  padding: clamp(.6rem, 1.8svh, 1.4rem);
+  gap: clamp(.3rem, .9svh, .8rem);
+}
+/* Margine inferiore per non finire sotto le frecce di navigazione (fixed,
+   stesso angolo in basso a destra su ogni slide): la griglia è tutta in fr,
+   quindi restringerla di un margine proporzionale resta sempre zero-scroll. */
+#stations-grid, #stations-grid-2 { margin-bottom: clamp(3rem, 10svh, 5rem); }
+.station-card--num { font-size: clamp(1.1rem, 2.6svh, 1.9rem); }
+.station-card--symbol { width: clamp(3rem, 58cqmin, 15rem); height: clamp(3rem, 58cqmin, 15rem); }
+/* Una stazione per riga ha il simbolo più grande: scala, non una card diversa. */
+.station-card--feature .station-card--symbol { width: clamp(3rem, 74cqmin, 19rem); height: clamp(3rem, 74cqmin, 19rem); }
+.station-card--name { font-size: clamp(.85rem, 1.9svh, 1.2rem); }
 .station-card:hover, .station-card:focus-visible {
   background: var(--c);
   color: var(--ink);
@@ -292,24 +366,58 @@ body {
   text-align: center;
 }
 
-/* ---------- CHIP ---------- */
-.chip {
-  display: inline-flex; align-items: center; gap: .5rem;
-  padding: .45rem .8rem;
-  border: 1px solid rgba(242, 239, 232, .3);
-  font-family: "JetBrains Mono", monospace; font-size: 11px;
-  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
-  transition: background .2s, color .2s, border-color .2s;
-}
-button.chip:hover { border-color: var(--paper); }
-.chip.is-active { background: var(--paper); color: var(--night); border-color: var(--paper); }
-.chip-dot { width: .7rem; height: .7rem; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(242, 239, 232, .35); }
+/* ---------- PALETTE ----------
+   La palette primaria Spotify (3 colori, la firma dell'evento) ha lo stesso
+   trattamento delle card Stazioni: tre tasselli grandi e di pari peso, non
+   piccoli pallini in una legenda. Sotto, i 20 colori di genere restano uno
+   spettro continuo in ordine di linea: il colore riempie la fascia, una
+   striscia sottile in basso porta il colore di abbinamento — un solo
+   oggetto visivo invece di una griglia di swatch. */
+.palette-primary { height: clamp(6.5rem, 19svh, 9rem); }
+.palette-primary-tile { padding: clamp(.6rem, 1.6svh, 1.1rem); cursor: copy; transition: flex-grow .25s cubic-bezier(.2,.8,.2,1); }
+.palette-primary-tile:hover, .palette-primary-tile:focus-visible { flex-grow: 1.15; }
+.palette-primary-tile__name { font-size: clamp(1.1rem, 3svh, 1.6rem); line-height: 1; }
+.palette-primary-tile__hex { font-size: clamp(.75rem, 1.6svh, .95rem); margin-top: .35rem; }
 
-/* ---------- PALETTE ---------- */
-.swatch, .swatch-big { transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; cursor: copy; }
-.swatch:hover, .swatch-big:hover { transform: translateY(-3px); box-shadow: 0 10px 0 -4px rgba(0,0,0,.35); position: relative; z-index: 1; }
-.pair-tile { transition: opacity .3s, filter .3s; }
-.pair-tile.is-dimmed { opacity: .15; filter: grayscale(1); }
+.palette-spectrum { height: clamp(16rem, 42svh, 24rem); cursor: copy; }
+.palette-band { flex: 1 1 0; min-width: 0; overflow: hidden; transition: flex-grow .25s cubic-bezier(.2,.8,.2,1); }
+.palette-band:hover, .palette-band:focus-visible { flex-grow: 1.6; }
+.palette-band__fill {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(.35rem, 1.2svh, .7rem);
+  padding: clamp(.5rem, 1.4svh, .9rem) clamp(.4rem, 1.2svh, .8rem);
+  overflow: hidden;
+}
+.palette-band__num { font-size: clamp(.8rem, 1.6svh, 1.05rem); font-weight: 700; letter-spacing: .02em; white-space: nowrap; }
+/* Il nome della stazione ruota di lato come un'unica parola (non lettera
+   su lettera): si legge inclinando la testa, non componendo le lettere
+   una a una — molto più leggibile nella fascia stretta. */
+.palette-band__name {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: clamp(.78rem, 1.5svh, 1.05rem);
+  font-weight: 700;
+  letter-spacing: .01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+/* Il codice HEX resta nascosto finché non si passa sopra la fascia — è in
+   overlay assoluto così non consuma spazio verticale riservato al nome. */
+.palette-band__hex {
+  position: absolute;
+  left: 0; right: 0; bottom: .5rem;
+  text-align: center;
+  font-size: clamp(.6rem, 1.2svh, .8rem);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.palette-band:hover .palette-band__hex,
+.palette-band:focus-visible .palette-band__hex { opacity: .95; }
+.palette-band__pair { display: block; height: clamp(.6rem, 2svh, 1rem); }
 
 .toast {
   position: fixed; left: 50%; bottom: 1.5rem; z-index: 80;
@@ -319,13 +427,44 @@ button.chip:hover { border-color: var(--paper); }
 }
 .toast.is-on { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- PROMOZIONE ----------
+   Ogni edizione (stazione × formato) è visibile per intero, mai nascosta
+   dietro un'altra: una griglia, non un mazzetto. Ogni cella apre il
+   lightbox già usato in Ambient per la vista a schermo intero. */
+.promo-showcase { flex: 0 0 auto; display: flex; flex-direction: column; gap: .5rem; }
+.promo-gallery { display: flex; flex-direction: column; gap: clamp(.4rem, 1svh, .75rem); }
+.promo-gallery__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(.4rem, .8vw, .75rem); }
+.promo-thumb {
+  position: relative; display: block; overflow: hidden; cursor: zoom-in;
+  border: 1.5px solid rgba(242, 239, 232, .2); background: var(--night);
+}
+.promo-gallery__row--print .promo-thumb { width: clamp(5rem, 9vw, 7.5rem); aspect-ratio: 1408 / 2000; }
+.promo-gallery__row--affissione .promo-thumb { width: clamp(5rem, 9vw, 7.5rem); aspect-ratio: 1701 / 850; }
+.promo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+.promo-thumb:hover img, .promo-thumb:focus-visible img { transform: scale(1.05); }
+.promo-thumb:focus-visible { outline: 2px solid var(--paper); outline-offset: -2px; }
+.promo-thumb__tag {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: .3rem .4rem;
+  font-size: .55rem; letter-spacing: .08em;
+  background: linear-gradient(to top, rgba(7,7,12,.92) 45%, rgba(7,7,12,0));
+}
+
+.promo-timeline li { display: flex; flex-direction: column; gap: .2rem; }
+.promo-steps__what { font-size: clamp(.95rem, 1.5vw, 1.2rem); line-height: 1; margin-top: .1rem; }
+.promo-steps--accent .promo-steps__what { color: var(--spotify); }
+
 /* ---------- AMBIENT ACTIVATION ---------- */
 /* Scatti della galleria */
 .shot { cursor: zoom-in; }
 .shot-media { transition: transform .6s cubic-bezier(.2,.8,.2,1); }
 .shot:hover .shot-media, .shot:focus-visible .shot-media { transform: scale(1.04); }
 .shot:focus-visible { outline: 2px solid var(--paper); outline-offset: -2px; }
-.shot-meta { background: linear-gradient(to top, rgba(7,7,12,.95) 45%, rgba(7,7,12,0)); padding-top: 4rem; }
+.shot-meta { background: linear-gradient(to top, rgba(7,7,12,.97) 60%, rgba(7,7,12,0)); padding-top: 5rem; }
+/* Il titolo della slide vive sopra la prima foto, non in una colonna di testo
+   a fianco: la fotografia riempie tutta la cornice, pochissimo testo sopra.
+   Il buio sotto il testo copre tutta la didascalia, non solo il titolo, così
+   la leggibilità non dipende dai colori della singola foto. */
+.ambient-headline { z-index: 1; background: linear-gradient(to bottom, rgba(7,7,12,.93) 60%, rgba(7,7,12,0)); padding-bottom: 3.5rem; }
 .shot-open {
   position: absolute; top: .9rem; padding: .3rem .55rem;
   background: var(--night); color: var(--paper);
@@ -368,26 +507,24 @@ body.lightbox-open { overflow: hidden; }
   .lightbox-nav { top: auto; bottom: 1rem; transform: none; }
 }
 
-/* ---------- MAPPA ---------- */
-.map-node { cursor: pointer; }
-.map-node .ring { transition: r 0.3s, fill 0.3s; }
-.map-node:hover .ring, .map-node.is-active .ring { r: 17; }
-.map-node .pulse { opacity: 0; transform-box: fill-box; transform-origin: center; }
-.map-node.is-active .pulse { animation: pulse 1.6s ease-out infinite; }
-@keyframes pulse {
-  0% { opacity: .8; transform: scale(1); }
-  100% { opacity: 0; transform: scale(2.6); }
-}
-.map-label { font-family: "JetBrains Mono", monospace; font-size: 13px; letter-spacing: .03em; text-transform: uppercase; fill: var(--paper); }
-.map-node.is-active .map-label { fill: var(--c); font-weight: 700; }
-
-.panel-swap { animation: panel-in .5s cubic-bezier(.2,.8,.2,1); }
-@keyframes panel-in { from { opacity: 0; transform: translateY(12px); } }
-
-/* ---------- TIMETABLE ---------- */
+/* ---------- TIMETABLE ----------
+   21 righe (vagoni + 20 stazioni) devono stare nello spazio disponibile
+   senza scrollbar interna: padding e font in clamp(), non fissi — stesso
+   principio già usato ovunque nel deck. Una riga per stazione (genere nel
+   tooltip, non in una seconda riga) per tenere l'altezza sotto controllo. */
+.tt-cell { padding-block: clamp(.04rem, .18svh, .35rem); padding-inline: clamp(.4rem, .8vw, .75rem); }
+.tt-cell__name { font-size: clamp(.6rem, 1.25svh, .95rem); }
+.tt-cell__slot { font-size: clamp(.56rem, 1.1svh, .8rem); }
+.tt-swatch { width: clamp(.5rem, 1.1svh, .75rem); height: clamp(.5rem, 1.1svh, .75rem); }
+.tt-head { font-family: "JetBrains Mono", monospace; font-size: clamp(.5rem, .95svh, .62rem); letter-spacing: .1em; text-transform: uppercase; line-height: 1.5; }
+.tt-head__range { font-size: clamp(.42rem, .8svh, .55rem); letter-spacing: .04em; }
 .slot-cell { transition: background .3s, color .3s, opacity .3s; }
 .slot-cell.is-live { background: var(--c); color: var(--ink); }
 .slot-cell.is-past { opacity: .3; }
+.timetable-scroll { overflow-y: hidden; }
+.tt-stack { gap: clamp(.2rem, 1.1svh, 1rem); }
+.tt-panel { padding: clamp(.3rem, 1svh, .75rem); }
+.tt-panel__value { font-size: clamp(1.1rem, 3.6svh, 2.25rem); }
 
 input[type="range"].scrubber { -webkit-appearance: none; appearance: none; height: 6px; background: var(--line); }
 input[type="range"].scrubber::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--red); border: 0; cursor: grab; }
