@@ -215,28 +215,91 @@
     toastTimer = setTimeout(() => t.classList.remove("is-on"), 1600);
   }
 
-  /* ---------- 08 · USER FLOW — biglietto Spotify + esperienza interattiva ---------- */
-  // Pattern QR deterministico (stesso seed = stesso disegno): non è un codice
-  // funzionante, è il motivo grafico del "biglietto/scansione digitale".
-  function qrPattern(seed, n = 6) {
-    let h = 0;
-    for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-    const cells = [];
-    for (let i = 0; i < n * n; i++) {
-      h = (Math.imul(h, 1103515245) + 12345) >>> 0;
-      cells.push(h % 5 === 0 ? 0 : (h >> 3) % 2);
-    }
-    // i tre angoli "finder" pieni, come nei QR veri: rende il motivo leggibile a colpo d'occhio
-    [[0, 0], [0, n - 2], [n - 2, 0]].forEach(([r, c]) => { cells[r * n + c] = cells[r * n + c + 1] = cells[(r + 1) * n + c] = cells[(r + 1) * n + c + 1] = 1; });
-    return `<div class="flow-qr" style="--qr-n:${n}">${cells.map((c) => `<span class="${c ? "is-on" : ""}"></span>`).join("")}</div>`;
+  /* ---------- 08 · USER FLOW — prototipo reale Spotify × Metro Wave, in un
+     iframe su assets invariati (spotify-experience/). L'iframe ha una
+     dimensione nativa fissa, sempre oltre la soglia di 820px alla quale il
+     prototipo passerebbe al proprio layout mobile a schermo pieno: così resta
+     sempre nel suo layout "desktop" con il bezel del telefono, e lo adattiamo
+     noi allo spazio disponibile scalandolo per intero (mai ritagliato, mai
+     deformato: niente crop, scala uniforme su entrambi gli assi). */
+  const SE_NATIVE_W = 824, SE_NATIVE_H = 1004;
+  const SE_SRC = "spotify-experience/";
+
+  function seSizeFrame(frameEl, iframeEl) {
+    if (!frameEl || !iframeEl) return;
+    const w = frameEl.getBoundingClientRect().width;
+    if (!w) return;
+    iframeEl.style.width = `${SE_NATIVE_W}px`;
+    iframeEl.style.height = `${SE_NATIVE_H}px`;
+    iframeEl.style.transform = `scale(${w / SE_NATIVE_W})`;
   }
 
-  function initFlowSlides() {
-    const ticketStub = $("#flow-qr-ticket");
-    if (ticketStub) ticketStub.innerHTML = qrPattern("metrowave-ticket");
-    const scanStub = $("#flow-qr-stazione");
-    if (scanStub) scanStub.innerHTML = qrPattern("metrowave-stazione", 5);
+  let SE_FS_LAST_FOCUS = null;
+  let SE_FS_IFRAME = null;
+  const seFsBox = () => $("#spotify-fs");
+
+  function seOpenFullscreen() {
+    const box = seFsBox();
+    SE_FS_LAST_FOCUS = document.activeElement;
+    const phoneSlot = $("#spotify-fs-phone");
+    if (!SE_FS_IFRAME) {
+      // Istanza separata dall'anteprima inline, creata una sola volta: se si
+      // chiude e si riapre lo schermo intero, il prototipo resta dov'era
+      // (stessa schermata/modalità), comodo durante una demo dal vivo.
+      SE_FS_IFRAME = document.createElement("iframe");
+      SE_FS_IFRAME.src = SE_SRC;
+      SE_FS_IFRAME.title = "Prototipo interattivo Metro Wave nell'app Spotify, a schermo intero";
+      // Stesso dominio dell'iframe: appena il focus è dentro il prototipo,
+      // Esc non arriverebbe più al documento principale, quindi lo
+      // intercettiamo anche nel documento dell'iframe stesso.
+      SE_FS_IFRAME.addEventListener("load", () => {
+        try { SE_FS_IFRAME.contentWindow.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") seCloseFullscreen();
+        }); } catch (_) {}
+      });
+      phoneSlot.appendChild(SE_FS_IFRAME);
+    }
+    box.hidden = false;
+    document.body.classList.add("overlay-open");
+    void box.offsetWidth;
+    box.classList.add("is-open");
+    seSizeFrame(phoneSlot, SE_FS_IFRAME);
+    $("[data-spotify-close]", box).focus();
   }
+  function seCloseFullscreen() {
+    const box = seFsBox();
+    box.classList.remove("is-open");
+    document.body.classList.remove("overlay-open");
+    setTimeout(() => (box.hidden = true), 250);
+    SE_FS_LAST_FOCUS?.focus();
+  }
+  (function initSpotifyEmbed() {
+    const phone = $("#spotify-embed-phone");
+    const iframe = $("#spotify-embed-iframe");
+    const cta = $("#spotify-embed-open");
+    const box = seFsBox();
+    if (!phone || !iframe || !box) return;
+
+    seSizeFrame(phone, iframe);
+    window.addEventListener("resize", () => {
+      seSizeFrame(phone, iframe);
+      if (!box.hidden) seSizeFrame($("#spotify-fs-phone"), SE_FS_IFRAME);
+    });
+
+    phone.addEventListener("click", seOpenFullscreen);
+    phone.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); seOpenFullscreen(); }
+    });
+    cta.addEventListener("click", seOpenFullscreen);
+
+    box.addEventListener("click", (e) => {
+      if (e.target.closest("[data-spotify-close]")) seCloseFullscreen();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (box.hidden) return;
+      if (e.key === "Escape") seCloseFullscreen();
+    });
+  })();
 
   /* ---------- 07 · TIMETABLE ---------- */
   function initTimetable() {
@@ -635,7 +698,6 @@
   initStationsGrid();
   initPalette();
   initConceptStops();
-  initFlowSlides();
   initTicketGallery();
   initTimetable();
   initPromoGallery();

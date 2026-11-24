@@ -1,0 +1,131 @@
+/* =====================================================================
+   METROWAVE · skin "manifesto"
+   1. Pop-up: card modale in stile Spotify
+   2. Metrowave Mode (Home del festival, card poster con le bolle Core)
+   3. Simboli delle 20 stazioni su carta
+   ===================================================================== */
+
+/* ============ 1. POP-UP (launch / notte evento) ============
+   Card modale nativa Spotify: Home visibile dietro, scurita con alone verde;
+   card centrata, area visiva in alto, titolo, sottotitolo, un bottone; "Chiudi" sotto. */
+.popup{position:absolute;inset:0;z-index:99;display:none;overflow:hidden;
+  background:radial-gradient(70% 45% at 50% 50%,rgba(30,215,96,.22),transparent 70%),rgba(0,0,0,.78);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.popup-on .popup{display:block;animation:fade .3s ease}
+.popup-on .statusbar{z-index:100;background:none!important}
+.popup-on .island,.popup-on .homebar{z-index:100}
+@keyframes fade{from{opacity:0}}
+
+.mwm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:60px 32px 40px}
+.mwm-card{width:100%;border-radius:16px;background:#181818;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 30px 70px rgba(0,0,0,.65);
+  padding:48px 28px 18px;text-align:center;animation:cardin .45s cubic-bezier(.2,.9,.3,1) both;transition:opacity .3s,transform .3s}
+@keyframes cardin{from{opacity:0;transform:translateY(16px) scale(.97)}}
+.mwm-live{margin:-24px 0 24px;font:700 11px var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--green)}
+.mwm-logo{display:flex;justify-content:center;color:var(--green);margin-bottom:34px}
+.mwm-title{margin:0;font:900 44px/.95 var(--disp);letter-spacing:-.045em;text-transform:uppercase;color:#fff}
+.mwm-line{display:block;margin-top:12px;font:700 17px/1.3 var(--ui);letter-spacing:-.01em;text-transform:none}
+.mwm-desc{margin:14px auto 0;max-width:290px;font:500 14.5px/1.45 var(--ui);color:var(--text-2)}
+.mwm-cta{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:36px;border-radius:999px;background:var(--green);color:#000;font:800 16px var(--ui);transition:transform .1s}
+.mwm-cta:active{transform:scale(.97)}
+.mwm-close{display:block;margin:10px auto 0;padding:12px 20px;font:700 14px var(--ui);color:var(--text-2)}
+.mwm-close:hover{color:#fff}
+
+/* uscita: la card si chiude, poi l'overlay sfuma sulla Home */
+.popup.entering .mwm-card{opacity:0;transform:scale(.96)}
+.popup.leaving{opacity:0;transition:opacity .3s}
+
+/* ============ 2. METROWAVE MODE ============ */
+.fest .viewport{background:var(--bg)}
+.fest.on-home .statusbar{background:#000!important}
+.fhead{background:#000;padding-bottom:6px}
+.festbar{display:flex;align-items:center;gap:7px;padding:6px 16px 8px;background:#000;font:800 15px/1 var(--disp);letter-spacing:-.02em;color:var(--green);text-transform:lowercase}
+.festbar .pts{margin-left:auto;padding:4px 8px;font:800 11px var(--mono);text-transform:uppercase}
+.festbar button{color:#fff;text-transform:none;font:700 12px var(--ui);background:rgba(255,255,255,.1);padding:5px 12px;border-radius:999px}
+.fest .pill:not(.active):not(.mw){background:#1c1c1c}
+.fest .pill.mw.active{background:var(--green);color:#000;border-color:var(--green)}
+.fest .avatar{box-shadow:0 0 0 2px #000,0 0 0 4px var(--green)}
+.fest .tab.on{color:var(--green)}
+.fest .tabbar::before{content:'';position:absolute;left:0;right:0;top:12px;height:1px;background:var(--green);opacity:.45}
+.tck{position:relative;display:grid;place-items:center;width:28px;height:28px}
+.tck i{position:absolute;top:-1px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px #000,0 0 10px var(--green)}
+
+/* card poster della Home: blocco verde, cerchi neri, testo nero che diventa verde sopra i cerchi */
+.hp{position:relative;margin:14px 16px 0;height:530px;border-radius:6px;overflow:hidden;background:var(--green);color:#000;container-type:inline-size;cursor:pointer;font-family:var(--disp)}
+.pz-art{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pz-paper{position:absolute;inset:0;background-image:var(--noise);opacity:.22;mix-blend-mode:overlay;pointer-events:none;z-index:3}
+.hp-layer{position:absolute;inset:0;padding:16px 16px 82px;display:flex;flex-direction:column;pointer-events:none}
+.hp-in{color:var(--green);clip-path:url(#hpclip);-webkit-clip-path:url(#hpclip)} /* prefisso: Safari */
+.hp-top{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:-.01em}
+.hp-big{font-weight:900;font-size:28cqw;line-height:.8;letter-spacing:-.065em;margin:18px 0 0 -.04em;text-transform:uppercase}
+.hp-mid{font-weight:800;font-size:6.2cqw;line-height:.95;letter-spacing:-.035em;word-spacing:.1em;margin-top:14px}
+.hp-actions{position:absolute;left:16px;right:16px;bottom:16px;display:flex;align-items:center;gap:8px;z-index:2}
+.hp-actions .icb{color:#000;position:relative}
+.hp-actions .play{position:relative}
+.hp .btn-dark{height:48px;box-shadow:inset 0 0 0 2px var(--green)} /* il bordo verde lo stacca quando passa sopra un cerchio nero */
+.hp-actions .play{background:#000;color:var(--green)}
+
+/* intestazioni e griglia editoriale delle 20 stazioni */
+.home-mw .sec h2{font:900 27px/1 var(--disp);letter-spacing:-.05em;text-transform:uppercase}
+.ed-k{font:800 14px var(--disp);color:var(--green)}
+.eg{display:grid;grid-template-columns:1fr 1fr;margin:0 16px;border-top:2px solid #fff}
+.eg-c{display:grid;grid-template-columns:auto 1fr;align-items:start;padding:12px 12px 14px 0;border-bottom:1px solid rgba(255,255,255,.16);text-align:left;font-family:var(--disp);color:#fff;min-height:112px}
+.eg-c:nth-child(odd){border-right:1px solid rgba(255,255,255,.16)}
+.eg-c:nth-child(even){padding-left:12px}
+.eg-c b{grid-column:1/-1;font-weight:800;font-size:18px;line-height:1.05;letter-spacing:-.03em;margin-top:12px}
+.eg-c .eg-g{grid-column:1/-1;font-weight:600;font-size:13px;line-height:1.25;margin-top:3px;color:#fff}
+.eg-n{font-weight:900;font-size:34px;line-height:.85;letter-spacing:-.05em;color:var(--green)}
+.eg-tag{font:800 10px var(--mono);font-style:normal;color:var(--green);letter-spacing:.04em;margin-left:6px;vertical-align:top}
+.eg-sym{justify-self:end;width:42px;height:42px;background:var(--paper);border-radius:6px;padding:6px}
+
+/* ============ 3. SIMBOLI DELLE STAZIONI SU CARTA ============ */
+.paper{background:var(--paper)!important;color:#111}
+.stc.paper{display:flex;flex-direction:column;padding:8%;font-family:var(--disp)}
+.stc.paper.sm{padding:13%}
+.stc-t{font-weight:800;line-height:.95;letter-spacing:-.03em;text-transform:uppercase}
+.stc-g{font-weight:500;text-transform:uppercase;margin-top:3%;line-height:1.1;letter-spacing:-.01em}
+.stc-s{flex:1;min-height:0;display:grid;place-items:center;margin-top:7%}
+.stc.sm .stc-s{margin:0}
+.stc-s svg,.scd-a svg,.qc-s svg,.msym svg,.eg-sym svg,.bs svg,.ss svg,.tsy svg,.onb-sym svg,.schip .d svg,.st-syms svg{display:block;width:100%;height:100%}
+/* card stazione (reference): carta, filetto interno, nome, genere, simbolo */
+.scd{background:var(--paper);color:#111;border-radius:14px;padding:5%;container-type:inline-size;box-shadow:0 18px 50px rgba(0,0,0,.45);font-family:var(--disp);text-align:left}
+.scd-in{border:1.5px solid #111;border-radius:10px;padding:9% 8% 10%}
+.scd-t{font-weight:800;font-size:9.4cqw;line-height:1;letter-spacing:-.03em;text-transform:uppercase}
+.scd-g{font-weight:500;font-size:4.8cqw;text-transform:uppercase;margin-top:2%;letter-spacing:-.01em}
+.scd-a{aspect-ratio:1;margin-top:9%}
+.dcv .scd{transform:rotate(-2deg)}
+.rs-card{display:flex;justify-content:center;margin:22px 0 18px;position:relative}
+.rs-card .scd{transform:rotate(-3deg)}
+/* carta del quiz */
+.qcard.paper{container-type:inline-size;font-family:var(--disp)}
+.qc-in{position:absolute;inset:14px;border:1.5px solid #111;border-radius:10px;padding:18px;display:flex;flex-direction:column}
+.qc-in .scd-t{font-size:9cqw}
+.qc-s{flex:1;min-height:0;display:grid;place-items:center;padding:14px 26px}
+.qc-s svg{width:auto;max-width:100%}
+/* piccoli simboli in mappa, timbri, totem, a bordo, sfida, recap */
+.msym{width:42px;height:42px;background:var(--paper);border-radius:6px;padding:6px;justify-self:end}
+.stamp.on .ss{width:68%;height:68%}
+.tsy{width:22px;height:22px;display:inline-block}
+.onb-sym{position:absolute;right:16px;top:112px;width:92px;height:92px;border-radius:10px;padding:12px;transform:rotate(4deg)}
+.chsym{position:absolute;right:16px;bottom:16px;width:78px;height:78px;border-radius:8px;padding:9px}
+.st-syms{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0 0;position:relative}
+.st-syms span{aspect-ratio:1;border-radius:6px;padding:6px;display:block}
+
+/* ============ 4. ANTEPRIMA DI PREVENDITA (Metrowave bloccato fino al 27 giugno) ============ */
+.pv{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 24px 0}
+.pv-lock{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:#fff;margin-bottom:22px}
+.pv-logo{color:var(--green)}
+.pv-title{margin:14px 0 0;font:900 40px/.95 var(--disp);letter-spacing:-.045em;text-transform:uppercase}
+.pv-badge{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:7px 12px;border-radius:999px;background:rgba(30,215,96,.12);color:var(--green);font:700 12.5px var(--ui)}
+.pv-cd{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;margin-top:26px}
+.pv-cd div{background:var(--surface);border-radius:10px;padding:12px 0 10px}
+.pv-cd b{display:block;font:900 28px/1 var(--disp);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.pv-cd span{display:block;margin-top:6px;font:700 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--text-2)}
+.pv-copy{margin:22px 0 0;font:500 14.5px/1.45 var(--ui);color:var(--text-2);max-width:320px}
+.pv-list{list-style:none;margin:22px 0 24px;padding:0;width:100%;border-top:1px solid #2a2a2a}
+.pv-list li{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid #2a2a2a;color:var(--text-3);font-size:14.5px;text-align:left}
+.pv-list li span{flex:1;color:var(--text-2)}
+.pv-pass{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-bottom:12px;padding:12px;border-radius:10px;background:var(--surface);font:600 13.5px var(--ui);color:#fff}
+.pv-pass svg{color:var(--green)}
+.pv-link{margin-top:14px;padding:8px;font:700 14px var(--ui);color:#fff;text-decoration:underline;text-underline-offset:3px}
+/* card poster in prevendita */
+.hp-lockb{display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 16px;border-radius:999px;background:#000;color:#fff;font:700 13.5px var(--ui);position:relative;box-shadow:inset 0 0 0 2px var(--green)}

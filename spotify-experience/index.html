@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Metrowave Prototipo</title>
+<meta name="description" content="Metrowave · prototipo interattivo del festival notturno sulla Linea 1 di Napoli, integrato in Spotify.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="assets/logo/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<!-- stili: base (token, telefono, componenti) → schermate → skin Metrowave → menu demo -->
+<link rel="stylesheet" href="css/base.css?v=17">
+<link rel="stylesheet" href="css/screens.css?v=17">
+<link rel="stylesheet" href="css/metrowave.css?v=17">
+<link rel="stylesheet" href="css/presenter.css?v=17">
+<!-- script classici (non moduli) così il prototipo si apre anche con doppio clic (file://). L'ordine conta. -->
+<script src="js/data.js?v=17" defer></script>
+<script src="js/icons.js?v=17" defer></script>
+<script src="js/utils.js?v=17" defer></script>
+<script src="js/symbols.js?v=17" defer></script>
+<script src="js/core.js?v=17" defer></script>
+<script src="js/components.js?v=17" defer></script>
+<script src="js/screens.js?v=17" defer></script>
+<script src="js/flows.js?v=17" defer></script>
+<script src="js/app.js?v=17" defer></script>
+</head>
+<body>
+
+<!-- selettore di stato per la demo: fuori dal telefono, in alto a sinistra -->
+<div class="phasesw" id="phasesw" role="group" aria-label="Momento del festival">
+  <button data-p="pre" onclick="demoPresale()">Prevendita</button>
+  <button data-p="live" onclick="demoLiveNight()">Live · 27.06</button>
+  <button data-p="livenp" onclick="demoLiveNoPass()">Live · senza pass</button>
+</div>
+
+<div class="stage">
+  <div class="phone" id="phone">
+    <button class="mtrigger" onclick="toggleMenu()" aria-label="Menu presentazione"></button>
+    <div class="island"></div>
+    <div class="statusbar">
+      <span id="clock">11:38</span>
+      <span class="sb-r">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1" opacity=".35"/><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"/></svg>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.2c2.4 0 4.6.9 6.2 2.5l1.3-1.3A10.6 10.6 0 0 0 8.5.4 10.6 10.6 0 0 0 1 3.4l1.3 1.3a8.7 8.7 0 0 1 6.2-2.5zm0 3.6c1.4 0 2.7.5 3.7 1.5l1.3-1.3a7 7 0 0 0-10 0l1.3 1.3a5.2 5.2 0 0 1 3.7-1.5zm0 3.5L6.4 9.4l2.1 2.2 2.1-2.2z"/></svg>
+        <span class="batt">25</span>
+      </span>
+    </div>
+    <div class="viewport" id="vp"></div>
+
+    <div class="mini" id="mini" onclick="miniTap()">
+      <div class="mcv" id="mcv"></div>
+      <div class="mtx"><div class="mt" id="mt"></div><div class="ma" id="ma"></div></div>
+      <button class="mib" onclick="event.stopPropagation();toast('Dispositivi disponibili')" aria-label="Dispositivi"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="4" width="9" height="16" rx="1.5"/><rect x="14.5" y="4" width="7" height="16" rx="1.5"/><circle cx="18" cy="15" r="2"/></svg></button>
+      <button class="mib" id="madd" onclick="event.stopPropagation();likeTrack()" aria-label="Salva"></button>
+      <button class="mib" id="mpp" onclick="event.stopPropagation();togglePlay()" aria-label="Play/Pausa"></button>
+      <div class="mprog" id="mprog"><i></i></div>
+    </div>
+
+    <nav class="tabbar" id="tabbar"></nav>
+    <div class="scrim" onclick="closeSheet()"></div>
+    <div class="sheet" id="sheet"></div>
+    <div class="toast" id="toast"></div>
+    <div class="ptoast" id="ptoast"></div>
+    <button class="push" id="push"></button>
+    <div class="popup" id="popup"></div>
+
+    <!-- Menu presentazione: nascosto, si apre toccando la Dynamic Island o premendo M -->
+    <div class="pmenu" id="pmenu">
+     <div class="pm-scrim" onclick="closeMenu()"></div>
+     <div class="pm-panel" onclick="if(event.target.closest('.jumps button'))closeMenu()">
+  <div class="pm-head"><b><img src="assets/logo/metrowave-logo-white-green.svg" alt="" height="18"> METROWAVE</b><button onclick="closeMenu()" aria-label="Chiudi menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="pm-hint">Scegli una schermata e ci salti subito. Il menu si apre toccando la Dynamic Island o premendo <kbd>M</kbd>.</div>
+
+  <h2>IMPOSTAZIONI DELLA DEMO</h2>
+  <div class="pm-sub">In che momento siamo?</div>
+  <div class="seg" id="seg">
+    <button data-p="pre" onclick="setPhase('pre')">Prima</button>
+    <button data-p="live" onclick="setPhase('live')">Notte</button>
+    <button data-p="post" onclick="setPhase('post')">Dopo</button>
+  </div>
+  <div class="pm-sub">Cosa ha già fatto l'utente? <span>(tocca per attivare o disattivare)</span></div>
+  <div class="toggles">
+    <button id="tg-ticket" onclick="toggleTicket()">Ha il biglietto</button>
+    <button id="tg-quiz" onclick="toggleQuiz()">Ha fatto il quiz</button>
+  </div>
+  <button class="pm-reset" onclick="resetDemo();setPhase('pre');jump('home');closeMenu()">↺ Ricomincia da capo</button>
+
+  <h2><i>1</i> PRIMA DELL'EVENTO · PREVENDITA</h2>
+  <div class="jumps">
+    <button onclick="resetDemo();jump('home')"><b>Home di Spotify</b><small>Il punto di partenza, prima di scoprire Metrowave</small></button>
+    <button onclick="demoPresale()"><b>Pop-up di lancio</b><small>La card che annuncia Metrowave e invita a comprare il Wave Pass</small></button>
+    <button onclick="resetDemo();S.homeFilter='mw';jump('home')"><b>Metrowave bloccato</b><small>La sezione Metrowave vista da chi non ha ancora il pass</small></button>
+    <button onclick="resetDemo();jump('home','activate')"><b>Attivazione del biglietto</b><small>Scelta di come attivare il Wave Pass</small></button>
+    <button onclick="resetDemo();jump('home','code',{ch:'eventbrite'})"><b>Codice Eventbrite</b><small>Inserimento del codice di un biglietto già comprato</small></button>
+    <button onclick="resetDemo();setTicket(true);jump('home','activated')"><b>Pass attivato</b><small>Conferma: il Wave Pass è pronto</small></button>
+    <button onclick="resetDemo();setTicket(true);jump('home','hub')"><b>Anteprima con il pass</b><small>Cosa vede chi ha il pass prima della notte</small></button>
+  </div>
+
+  <h2><i>2</i> LA NOTTE DELL'EVENTO · 27.06</h2>
+  <div class="jumps">
+    <button onclick="demoSplash()"><b>Pop-up della notte</b><small>L'avviso che il festival è iniziato</small></button>
+    <button onclick="demoLiveNoPass()"><b>Notte senza pass</b><small>Chi ha il biglietto da Eventbrite o dal botteghino</small></button>
+    <button onclick="demoLiveNoPass();hidePopup();jump('home','map')"><b>Mappa bloccata</b><small>La mappa vista da chi non ha attivato il pass</small></button>
+    <button onclick="resetDemo();demoLive();S.mapUnlocked=false;jump('home','map')"><b>Sblocco della mappa</b><small>Il momento in cui la mappa live si apre</small></button>
+    <button onclick="demoLive();jump('home','map')"><b>Mappa live e vagoni-palco</b><small>Le 20 stazioni e i treni con i DJ in corsa</small></button>
+    <button onclick="demoLive();jump('home','scan')"><b>Check-in in stazione</b><small>Lo scanner del QR sul totem in banchina</small></button>
+    <button onclick="demoLive();jump('home','onboard',{t:1})"><b>A bordo del vagone-palco</b><small>Il live set dentro il treno</small></button>
+  </div>
+
+  <h2><i>3</i> QUIZ · OPZIONALE</h2>
+  <div class="jumps">
+    <button onclick="resetDemo();demoLive();S.quiz=null;startQuiz()"><b>Quiz di affinità</b><small>6 domande per trovare la tua stazione</small></button>
+    <button onclick="resetDemo();demoLive();jump('home','result')"><b>Risultato e sfida</b><small>La tua stazione e la stazione sfida (punti ×2)</small></button>
+  </div>
+
+  <h2><i>4</i> PUNTI E PREMI</h2>
+  <div class="jumps">
+    <button onclick="demoLive();seedVisits([15,14,13,18]);jump('home','wave')"><b>Punti e timbri</b><small>Il Wave Pass con le stazioni visitate</small></button>
+    <button onclick="demoLive();seedVisits([15,14,13,18,16,1]);jump('home','gadgets')"><b>Catalogo gadget</b><small>I premi da riscattare con i punti</small></button>
+  </div>
+
+  <h2><i>5</i> DOPO L'EVENTO</h2>
+  <div class="jumps">
+    <button onclick="setPhase('post');jump('home','recap')"><b>Recap della notte</b><small>La card da condividere nelle storie</small></button>
+  </div>
+  <p class="disc">Concept accademico · Tesi IUAD Napoli, Design della Comunicazione. Non affiliato a Spotify. Nomi di artisti reali solo nella Home (Fase 1); line-up, DJ e brani del festival sono fittizi.</p>
+     </div>
+    </div>
+    <div class="homebar"></div>
+  </div>
+</div>
+
+</body>
+</html>

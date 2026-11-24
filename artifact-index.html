@@ -354,46 +354,18 @@
       <div class="section-head grid grid-cols-12 gap-4 t-label">
         <span class="col-span-2">08</span>
         <span class="col-span-7">User flow</span>
-        <span class="col-span-3 text-right opacity-50">Ipotesi progettuale</span>
+        <span class="col-span-3 text-right opacity-50">Prototipo interattivo</span>
       </div>
-      <div class="flex-1 min-h-0 grid md:grid-cols-2 gap-px bg-paper/15 border border-paper/15">
-        <div class="bg-abyss p-6 md:p-8 flex flex-col gap-4 min-h-0">
-          <div>
-            <span class="t-label text-spotify">Prima della notte</span>
-            <h2 class="t-lg font-display uppercase mt-1">Il biglietto,<br/>nell'app Spotify</h2>
-          </div>
-          <p class="t-lead">Un pass digitale per la Linea 1, pronto in pochi tocchi.</p>
-          <div class="flow-visual has-content flex-1 min-h-0">
-            <div class="flow-ticket">
-              <div class="flow-ticket__main">
-                <p class="t-label text-paper/50">Metro Wave · Biglietto digitale</p>
-                <p class="font-display uppercase text-3xl md:text-4xl mt-2 leading-none">Linea 1<br/>Tutta la notte</p>
-              </div>
-              <div class="flow-ticket__stub" id="flow-qr-ticket"></div>
-            </div>
-          </div>
+      <div class="flex-1 min-h-0 flex flex-col items-center justify-center gap-5 text-center">
+        <div class="reveal max-w-xl">
+          <h2 class="t-h1 font-display uppercase">L'esperienza Metro Wave</h2>
+          <p class="t-lead mt-2">Il prototipo reale dell'app, dentro Spotify.</p>
         </div>
-        <div class="bg-abyss p-6 md:p-8 flex flex-col gap-4 min-h-0">
-          <div>
-            <span class="t-label text-spotify">La notte del festival</span>
-            <h2 class="t-lg font-display uppercase mt-1">In stazione,<br/>si accende il percorso</h2>
+        <div class="spotify-embed reveal" id="spotify-embed">
+          <div class="spotify-embed__phone" id="spotify-embed-phone" role="button" tabindex="0" aria-label="Apri l'esperienza Metro Wave a schermo intero">
+            <iframe class="spotify-embed__iframe" id="spotify-embed-iframe" src="spotify-experience/" title="Prototipo interattivo Metro Wave nell'app Spotify" loading="lazy"></iframe>
           </div>
-          <p class="t-lead">Una scansione a ogni fermata, per seguire la propria tappa sulla mappa.</p>
-          <div class="flow-visual has-content flex-1 min-h-0">
-            <div class="flow-route">
-              <svg viewBox="0 0 400 140" class="flow-route__svg" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-                <polyline points="16,120 148,86 268,54 384,18" fill="none" stroke="var(--paper)" stroke-opacity=".3" stroke-width="2"/>
-                <circle cx="16" cy="120" r="6" fill="var(--paper)" opacity=".55"/>
-                <circle cx="148" cy="86" r="6" fill="var(--paper)" opacity=".55"/>
-                <circle cx="268" cy="54" r="8" fill="var(--red)" class="flow-route__pulse"/>
-                <circle cx="384" cy="18" r="6" fill="var(--paper)" opacity=".55"/>
-              </svg>
-              <div class="flow-route__scan">
-                <div id="flow-qr-stazione"></div>
-                <p class="t-label text-paper/50 mt-2">Scansione in stazione</p>
-              </div>
-            </div>
-          </div>
+          <button type="button" class="spotify-embed__cta" id="spotify-embed-open">Apri esperienza</button>
         </div>
       </div>
     </div>
@@ -525,6 +497,17 @@
   <div class="detail-footer t-label">
     <span id="detail-count"></span>
     <span class="text-paper/70" id="detail-caption"></span>
+  </div>
+</div>
+
+<!-- ESPERIENZA SPOTIFY · prototipo interattivo a schermo intero -->
+<div class="spotify-fs" id="spotify-fs" role="dialog" aria-modal="true" aria-label="Esperienza Metro Wave nell'app Spotify, a schermo intero" hidden>
+  <button type="button" class="spotify-fs__close" data-spotify-close>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    Torna alla presentazione <span class="text-paper/50">Esc</span>
+  </button>
+  <div class="spotify-fs__stage">
+    <div class="spotify-fs__phone" id="spotify-fs-phone"></div>
   </div>
 </div>
 
